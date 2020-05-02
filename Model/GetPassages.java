@@ -27,7 +27,7 @@ public class GetPassages {
     }
     
     public GetPassages(String filename, String sourceName) {
-    	if (CriticalTexts.valueOf(sourceName) instanceof CriticalTexts) {
+        if (CriticalTexts.valueOf(sourceName) instanceof CriticalTexts) {
             getRef(urlBase + filename);
            	for (Reference ref : passages.keySet()) {
                	passages.get(ref)[0] = getVerse(ref, -1, sourceName);
