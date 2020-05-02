@@ -1,0 +1,15 @@
+../Controller/SyntacticRoles.java
+../Controller/Reference.java
+../Controller/RefFormat.java
+../Controller/Verse.java
+../Controller/GreekStrong.java
+../Controller/GenerateFile.java
+../Controller/Start.java
+../Model/UpdateData.java
+../Model/GetPassages.java
+../Model/GetMartinTranslation.java
+../Model/Filter.java
+../Model/Classify.java
+./Tests/TestToUpdateData.java
+./Tests/TestToGetGreekText.java
+./Tests/TestToReadTheListOfVerses.java

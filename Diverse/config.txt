@@ -1,0 +1,14 @@
+
+
+# Display greek words in the unicode format ?
+# If unicodeFormat = false, it will display the greek words as their transliteration.
+unicodeFormat = true;
+
+
+# Greek Strong number in the file name.
+
+# Display in parenthesis the greek Strong number in the file name ?
+strongNumberInParenthesis = true;
+
+# To choose the greek text to use (for instance : NA28, WH, SBL, RP, …)
+greek_text = ST
