@@ -1,0 +1,9 @@
+.DS_Store
+!Model/Data/New\ Testament/
+Model/Data/New\ Testament/**
+!Model/Data/New\ Testament/.keepTheFolderOnGithub
+!Diverse/Generated\ Java\ classes/
+Diverse/Generated\ Java\ classes/**
+!Diverse/Generated\ Java\ classes/.keepTheFolderOnGithub
+
+
