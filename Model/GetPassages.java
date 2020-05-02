@@ -27,11 +27,16 @@ public class GetPassages {
     }
     
     public GetPassages(String filename, String sourceName) {
-    	getRef(urlBase + filename);
-        for (Reference ref : passages.keySet()) {
-        	passages.get(ref)[0] = getVerse(ref, -1, sourceName);
+    	if (CriticalTexts.valueOf(sourceName) instanceof CriticalTexts) {
+            getRef(urlBase + filename);
+           	for (Reference ref : passages.keySet()) {
+               	passages.get(ref)[0] = getVerse(ref, -1, sourceName);
+          	}
+           	passagesTranslated = new HashMap<Reference, Verse>(new GetMartinTranslation(passages).passagesTranslated);
         }
-        passagesTranslated = new HashMap<Reference, Verse>(new GetMartinTranslation(passages).passagesTranslated);
+        else {
+            System.out.println("Error: The programm only use critical texts at the moment.");
+        }
     }
 
     void getRef(String givenFilename) {
