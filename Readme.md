@@ -15,7 +15,7 @@ You have an example of a such list in this GitHub repo.<br />
 
 ## Here are some commands : 
 
-To start the programm with the list of verses located on (```/Model/Data/List_of_verses.csv```) : 
+To start the programm with the list of verses (located on ```/Model/Data/List_of_verses.csv```) : 
 ```
 cd Diverse && javac @java_files.txt -d Generated\ Java\ classes/ && cd Generated\ Java\ classes/ && java Start && cd ../..
 ```
