@@ -2,6 +2,8 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.File;  // Import the File class
+import java.io.FileWriter;   // Import the FileWriter class
 
 public class UpdateData {
     
@@ -19,7 +21,7 @@ public class UpdateData {
         for (int i = 0; i < command.length; i++) {
             command[i] = "";
         }
-        String url = "/Users/gustavberloty/Documents/GitHub/greekNTO-classificationProgram/Model/Data/New\\ Testament/";
+        String url = "/Users/gustavberloty/Documents/GitHub/nto-ranking/Model/Data/New\\ Testament/";
         command[0] += "\ncd " + url + " && mkdir `date +%Y-%m-%d` && ";
         
         for (int book = 40; book <= 66; book++) {
@@ -60,42 +62,61 @@ public class UpdateData {
             }
         }
 
-        
-        for(int i=0; i < 11; i++) {
-            System.out.println(command[i]);
-            /*processBuilder.command("script.sh");
-            try {
-
-                Process process = processBuilder.start();
-
-                StringBuilder output = new StringBuilder();
-
-                BufferedReader reader = new BufferedReader(
-                        new InputStreamReader(process.getInputStream()));
-
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    output.append(line + "\n");
-                }
-
-                int exitVal = process.waitFor();
-                if (exitVal == 0) {
-                    System.out.println("Success!");
-                    System.out.println(output);
-                    //System.exit(0);
-                } else {
-                    //abnormal...
-                }
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }*/
-        }
+        try {
+			  FileWriter myWriter = new FileWriter("../../Controller/.downloadData");
+			          for(int i=0; i < 11; i++) {
+						myWriter.write(command[i] + "\n");
+						/*processBuilder.command("script.sh");
+						try {
+			
+							Process process = processBuilder.start();
+			
+							StringBuilder output = new StringBuilder();
+			
+							BufferedReader reader = new BufferedReader(
+									new InputStreamReader(process.getInputStream()));
+			
+							String line;
+							while ((line = reader.readLine()) != null) {
+								output.append(line + "\n");
+							}
+			
+							int exitVal = process.waitFor();
+							if (exitVal == 0) {
+								System.out.println("Success!");
+								System.out.println(output);
+								//System.exit(0);
+							} else {
+								//abnormal...
+							}
+			
+						} catch (IOException e) {
+							e.printStackTrace();
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}*/
+					  }
+			  myWriter.close();
+			  // System.out.println("Successfully wrote to the file.");
+		} catch (IOException e) {
+			  System.out.println("An error occurred when we tried to write the file.");
+			  e.printStackTrace();
+		}    
     }
     
     public static void main(String[] args) {
+    	try {
+    	// The UpdateData binary is normally executed from the binary folder.
+		  File myObj = new File("../../Controller/.downloadData");
+		  if (myObj.createNewFile()) {
+        	// System.out.println("File created: " + myObj.getName());
+          } else {
+        	System.out.println("File already exists.");
+          }
+    	} catch (IOException e) {
+      		System.out.println("An error occurred.");
+      		e.printStackTrace();
+    	}
     	new UpdateData();
     }
 }

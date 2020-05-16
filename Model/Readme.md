@@ -1,9 +1,8 @@
-Here is a command : 
-
-To get a code to paste into the terminal, from this folder, for download the CNTR public data : 
+Here is a command to download the public CNTR collation : 
 ```
-javac UpdateData.java -d ../Diverse/Generated\ Java\ classes/ && cd ../Diverse/Generated\ Java\ classes/ && java UpdateData && cd ../../Model/
+javac UpdateData.java -d ../Diverse/Generated\ Java\ classes/ && cd ../Diverse/Generated\ Java\ classes/ && java UpdateData && sh ../../Controller/.downloadData  && rm ../../Controller/.downloadData && cd ../../Model/
 ```
+The downloaded files are located on ```Model/Data/New Testament/$TODAYSDATE$```
 
 <br />
 The Greek texts, the morphology and strongs numbers are from the CNTR (https://greekcntr.org/).
