@@ -79,13 +79,13 @@ public class UpdateData {
 			  	myWriter.write(command[i]);
 			  }
 			  
-			  aCommand = "\nzip -rm \"" + directories[0] + " (ziped ";
-			  aCommand += "automatically before the `date +%Y-%m-%d` ";
-			  aCommand +=  "folder).zip\" " + directories[0] + "\n";
+			  aCommand = "\nzip -rm \"" + directories[0] + " (zipped ";
+			  aCommand += "automatically just before the `date +%Y-%m-%d` ";
+			  aCommand +=  "folder was ready).zip\" " + directories[0] + "\n";
 			  myWriter.write(aCommand);
 			  
 			  aCommand = "mv " + newFolderName + " ";
-			  aCommand += "`date +%Y-%m-%d`\n";
+			  aCommand += "`date +%Y-%m-%d`\n\n";
 			  myWriter.write(aCommand);
 			  
 			  myWriter.close();
