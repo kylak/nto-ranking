@@ -30,4 +30,4 @@ To compile, from this folder, the source code :
 javac Diverse/@java_files.txt -d Diverse/Generated\ Java\ classes/
 ```
 <br />
-The algorithm automatically use the CNTR public data, especially the greek texts (https://greekcntr.org/).
+The algorithm use the CNTR public data, especially the greek texts (https://greekcntr.org/).
