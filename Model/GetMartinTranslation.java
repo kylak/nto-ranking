@@ -14,7 +14,7 @@ import java.text.DecimalFormat;
 public class GetMartinTranslation {
     
     static String locA = "/Users/gustavberloty/Documents/GitHub/";
-    static String locB = "greekNTO-classificationProgram/Model/Data/";
+    static String locB = "nto-ranking/Model/Data/";
     static String filename = "Bible Martin 1707.txt";
     static String source = "https://sites.google.com/view/martin1707"; // February 2020.
     

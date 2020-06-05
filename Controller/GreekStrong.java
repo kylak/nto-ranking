@@ -27,7 +27,7 @@ public class GreekStrong {
         try {
             if (strongNumber == (int)(strongNumber)) {
                 String regEx = "<strongs>" + (int)strongNumber + "<\\/strongs>\\s*?<greek\\s*?BETA=\"\\X+?\"\\s*?unicode=\"(\\X+?)\"\\s*?translit=\"(\\X+?)\"\\/>\\s*?<pronunciation\\s*?strongs=\"(\\X+?)\"\\/>\\s+?<strongs_derivation>\\X+?<strongsref\\s*?language=\"\\X+?\"\\s*?strongs=\"(\\X+?)\"\\/>\\X+?<\\/strongs_derivation><strongs_def>\\s*?(\\X+?)<\\/strongs_def><kjv_def>:--(\\X+?).<\\/kjv_def>";
-                String dictionary = new String(Files.readAllBytes(Paths.get("/Users/gustavberloty/Documents/GitHub/greekNTO-classificationProgram/Model/Data/Strongs dictionary/strongsgreek.xml")));
+                String dictionary = new String(Files.readAllBytes(Paths.get("/Users/gustavberloty/Documents/GitHub/nto-ranking/Model/Data/Strongs dictionary/strongsgreek.xml")));
                 Pattern pattern = Pattern.compile(regEx, Pattern.MULTILINE);
                 Matcher matcher = pattern.matcher(dictionary);
                 // System.out.println(matcher.group(1));

@@ -16,7 +16,7 @@ import java.text.DecimalFormat;
 public class GetPassages {
     
     String locA = "/Users/gustavberloty/Documents/GitHub/";
-    String locB = "greekNTO-classificationProgram/Model/Data/";
+    String locB = "nto-ranking/Model/Data/";
     String urlBase = locA + locB;
     HashMap<Reference, Verse[]> passages = new HashMap<Reference, Verse[]>();
     // The verse translated is passages.get(X)[0] where X is a key of passages.
