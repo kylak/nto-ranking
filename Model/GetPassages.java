@@ -22,21 +22,13 @@ public class GetPassages {
     // The verse translated is passages.get(X)[0] where X is a key of passages.
     HashMap<Reference, Verse> passagesTranslated;
     
-    enum CriticalTexts {
-        WH, NA28, SBL, RP, KJTR, ST//, BHP
-    }
-    
     public GetPassages(String filename, String sourceName) {
-        if (CriticalTexts.valueOf(sourceName) instanceof CriticalTexts) {
-            getRef(urlBase + filename);
-           	for (Reference ref : passages.keySet()) {
-               	passages.get(ref)[0] = getVerse(ref, -1, sourceName);
-          	}
-           	passagesTranslated = new HashMap<Reference, Verse>(new GetMartinTranslation(passages).passagesTranslated);
-        }
-        else {
-            System.out.println("Error: The programm only use critical texts at the moment.");
-        }
+					getRef(urlBase + filename);
+					// System.out.println("entered");
+					for (Reference ref : passages.keySet()) {
+						passages.get(ref)[0] = getVerse(ref, -1, sourceName);
+					}
+					passagesTranslated = new HashMap<Reference, Verse>(new GetMartinTranslation(passages).passagesTranslated);
     }
 
     void getRef(String givenFilename) {
