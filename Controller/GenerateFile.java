@@ -7,6 +7,7 @@ import java.io.PrintWriter;
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 import java.text.Normalizer;
+import java.util.Arrays;
 
 public class GenerateFile {
   
@@ -25,43 +26,101 @@ public class GenerateFile {
             for (HashMap.Entry<GreekStrong, ArrayList<Verse>> entry : classifyProcess.interestingClassifiedVerses.entrySet()) {
                 GreekStrong strong = entry.getKey();
                 
-                int nbreOfThisStrong = 0;
+                int nbreOfThisStrongEnTout = 0;
                 for (Verse temp : entry.getValue()) {
                     for (Float strongNmbr : temp.strongNumbers) {
                         if (Math.abs(strong.strongNumber - strongNmbr) < 0.001) {
-                            nbreOfThisStrong++;
+                            nbreOfThisStrongEnTout++;
                         }
                     }
                 }
                 
-                PrintWriter writer;
-                if (entry.getKey().strongNumber == (int) entry.getKey().strongNumber) {
-                    writer = new PrintWriter("../../View/(" + String.format("%02d", nbreOfThisStrong) + ") " + strong.unicode + " (n°" + (int) strong.strongNumber + ").md", "UTF-8");
-                    
-                }
-                else {
-                    writer = new PrintWriter("../../View/(" + String.format("%02d", nbreOfThisStrong) + ") " + strong.unicode + " (n°" + strong.strongNumber + ").md", "UTF-8");
-                }
-                strong.unicode = Normalizer.normalize(strong.unicode, Normalizer.Form.NFD);
-                strong.unicode = strong.unicode.replaceAll("\\p{M}", "");
-                ArrayList<Verse> value = entry.getValue();
-                String header = "<h2 align=\"center\">" + strong.unicode.toUpperCase() + "</h2>\n\n|Texte grec (" + greekText + ")|Traduction (Martin 1707)|Réference|\n|-----|-----|:---:"; // Add then the KJV translation.
-                writer.println(header);
+                // FUSIONNER LES DEUX FOR ?
+                
+                int s = 4; // Number of SemanticRoles accepted.
+                PrintWriter[] writers = new PrintWriter[s + 1]; // 0: verbe, 1: nom, 2: adverbe, 3: adjectifs, 4: tout. 
+                boolean[] isFirst = new boolean[s + 1];
+                Arrays.fill(isFirst, Boolean.TRUE);
+                
+                for (Verse temp : entry.getValue()) {
+                
+                	int morphIndex = 0;
+                	for(int i = 0; i < temp.strongNumbers.size(); i++) {
+                		if(strong.strongNumber == temp.strongNumbers.get(i)) {
+                			morphIndex = i;
+                			break;
+                		}
+                	}
+                	
+                	boolean first = false;
+                	String cat = "";
+                	int index = 0;
+                	switch(temp.morph.get(morphIndex).charAt(0)) {
+                		case 'V': // index = 0
+                			if (isFirst[0]) {
+                				first = true;
+                				isFirst[0] = false;
+                			}
+                			cat = "1. Verbes";
+                			index = 0;
+                			break;
+                		case 'N': // index = 1
+                			if (isFirst[1]) {
+                				first = true;
+                				isFirst[1] = false;
+                			}
+                			cat = "2. Noms";
+                			index = 1;
+                			break;
+                		case 'A': // index = 2
+                			if (isFirst[2]) {
+                				first = true;
+                				isFirst[2] = false;
+                			}
+               				cat = "4. Adjectifs";
+               				index = 2;
+               				break;
+               			case 'D': // index = 3
+                			if (isFirst[3]) {
+                				first = true;
+                				isFirst[3] = false;
+                			}
+                			cat = "3. Adverbes";
+                			index = 3;
+                			break;
+                			// If we modify the number of SemanticRoles accepted, 
+                			// then we should add associated case to the present switch.
+                	}
+                	if (first) {
+						if (entry.getKey().strongNumber == (int) entry.getKey().strongNumber) {
+							writers[index] = new PrintWriter("../../View/" + cat + "/(" + String.format("%02d", nbreOfThisStrongEnTout) + ") " + strong.unicode + " (n°" + (int) strong.strongNumber + ").md", "UTF-8");
+											
+						}
+						else { // Pour les strongs de Bunning, ceux en float.
+							writers[index] = new PrintWriter("../../View/" + cat + "/(" + String.format("%02d", nbreOfThisStrongEnTout) + ") " + strong.unicode + " (n°" + strong.strongNumber + ").md", "UTF-8");
+						}
+						strong.unicode = Normalizer.normalize(strong.unicode, Normalizer.Form.NFD);
+						strong.unicode = strong.unicode.replaceAll("\\p{M}", "");
+						String header = "<h2 align=\"center\">" + strong.unicode.toUpperCase() + "</h2>\n\n|Texte grec (" + greekText + ")|Traduction (Martin 1707)|Réference|\n|-----|-----|:---:"; // Add then the KJV translation.
+						writers[index].println(header);
 
-                for (Verse temp : value) {
-                    String translation = "";
-                    for (Reference aaa : passagesTranslated.keySet()) {
-                        if(aaa.textFormat.equals(temp.ref.textFormat)) {
-                            translation = passagesTranslated.get(aaa).text;
-                        }
-                    }
-                    String line = temp.text + "|" + translation + "|" + temp.ref.textFormat + "|";
-                    writer.println(line);
-                }
-                writer.close();
+					}
+					String translation = "";
+					for (Reference aaa : passagesTranslated.keySet()) {
+						if(aaa.textFormat.equals(temp.ref.textFormat)) {
+							translation = passagesTranslated.get(aaa).text;
+						}
+					}
+					String line = temp.text + "|" + translation + "|" + temp.ref.textFormat + "|";
+					if(writers[index] != null) // Aussi surprenant que cela puisse paraître, writers[index] a déjà été nul, faute à l'asynchrone ?
+						writers[index].println(line);
+					// writers[index].close(); ?	
+              }
+            
             }
 
-            PrintWriter writer2 = new PrintWriter("../../View/HapaxLegomenon.md", "UTF-8");
+			/* ajouter les catégories
+            PrintWriter writer2 = new PrintWriter("../../View/tout/HapaxLegomenon.md", "UTF-8");
             String header = "|Greek word (with Strong number)|KJV translation|New Testament reference|\n|:---:|-----|:---:|";
             writer2.println(header);
             for (HashMap.Entry<GreekStrong, Verse> entry : classifyProcess.uniqueThematicWords.entrySet()) {
@@ -80,39 +139,8 @@ public class GenerateFile {
                 writer2.println(line);
             }
             writer2.close();
+            */
         }
         catch (FileNotFoundException | UnsupportedEncodingException tt) {}
     }
-    /*
-    void generateTSV_forInterestingClassifiedVerses(GreekStrong strong, HashMap.Entry<GreekStrong, ArrayList<Verse>> entry) {
-        try {
-            PrintWriter writer = new PrintWriter("../../View/" + strong.unicode + " (n°" + strong.strongNumber + ").tsv", "UTF-8");
-            ArrayList<Verse> value = entry.getValue();
-            String header = "Greek text\tNew Testament reference"; // Add then the KJV translation.
-            writer.println(header);
-            for (Verse temp : value) {
-                String line = temp.text + "\t" + temp.ref.textFormat;
-                writer.println(line);
-            }
-            writer.close();
-        }
-        catch (FileNotFoundException | UnsupportedEncodingException tt) {}
-    }
-    
-    void generateTSV_forUniqueThematicWords() {
-        try {
-            PrintWriter writer2 = new PrintWriter("../../View/HapaxLegomenon.tsv", "UTF-8");
-            String header = "Greek word (with Strong number)\tKJV translation\tNew Testament reference";
-            writer2.println(header);
-            for (HashMap.Entry<GreekStrong, Verse> entry : classifyProcess.uniqueThematicWords.entrySet()) {
-                String Formated_KJV_Def = entry.getKey().KJV_Def.replaceAll("\n", " ");
-                Formated_KJV_Def = Formated_KJV_Def.replaceAll("\t", " ");
-                String line = entry.getKey().unicode + " (n°" + entry.getKey().strongNumber + ")\t" + Formated_KJV_Def + "\t" + entry.getValue().ref.textFormat;
-                writer2.println(line);
-            }
-            writer2.close();
-        }
-        catch (FileNotFoundException | UnsupportedEncodingException tt) {}
-    }
-    */
 }
