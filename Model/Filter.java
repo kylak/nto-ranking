@@ -33,7 +33,7 @@ public class Filter {
         /* for (String t : classifiedText) {
             System.out.println(t);
         } */
-        if (givenVerse.morph.size() == classifiedText.length && givenVerse.strongNumbers.size() == classifiedText.length) {
+        //if (givenVerse.morph.size() == classifiedText.length && givenVerse.strongNumbers.size() == classifiedText.length) {
             String filteredText = "";
             ArrayList<String> filteredMorph = new ArrayList<String>();
             ArrayList<Float> filteredStrongNumbers = new ArrayList<Float>();
@@ -49,14 +49,14 @@ public class Filter {
             }
             Verse verseFiltered = new Verse(givenVerse.ref, filteredText, filteredStrongNumbers, filteredMorph, givenVerse.source);
             return verseFiltered;
-        }
+        /*}
         else {
             System.out.println("givenVerse: " + new_text);
             System.out.println("givenVerse.morph.size(): " + givenVerse.morph.size());
             System.out.println("classifiedText.length: " + classifiedText.length);
             System.out.println("givenVerse.strongNumbers.size(): " + givenVerse.strongNumbers.size());
             return null;
-        }
+        }*/
     }
     
     boolean isThatRoleToBeKept(char role) {
