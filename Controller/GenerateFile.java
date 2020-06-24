@@ -19,6 +19,21 @@ public class GenerateFile {
         greekText = givenGreekText;
     }
     
+    int nbrOccurence(ArrayList<Verse> verses, float strongNumber, char cat) {
+    	int occurence = 0;
+    	for (Verse temp : verses) {	
+        	int i = 0;
+        	for (Float strongNmbr : temp.strongNumbers) {
+            	if (Math.abs(strongNumber - strongNmbr) < 0.001
+            	&& temp.morph.get(i).charAt(0) == cat) {
+            		occurence ++;
+                }
+                i++;
+            }
+        }
+        return occurence;
+    }
+    
     void generateFiles(HashMap<Reference, Verse> passagesTranslated) throws FileNotFoundException, UnsupportedEncodingException {
         
         try
@@ -44,79 +59,80 @@ public class GenerateFile {
                 
                 for (Verse temp : entry.getValue()) {
                 
-                	int morphIndex = 0;
-                	for(int i = 0; i < temp.strongNumbers.size(); i++) {
-                		if(strong.strongNumber == temp.strongNumbers.get(i)) {
-                			morphIndex = i;
-                			break;
-                		}
-                	}
-                	
-                	boolean first = false;
-                	String cat = "";
-                	int index = 0;
-                	switch(temp.morph.get(morphIndex).charAt(0)) {
-                		case 'V': // index = 0
-                			if (isFirst[0]) {
-                				first = true;
-                				isFirst[0] = false;
-                			}
-                			cat = "1. Verbes";
-                			index = 0;
-                			break;
-                		case 'N': // index = 1
-                			if (isFirst[1]) {
-                				first = true;
-                				isFirst[1] = false;
-                			}
-                			cat = "2. Noms";
-                			index = 1;
-                			break;
-                		case 'A': // index = 2
-                			if (isFirst[2]) {
-                				first = true;
-                				isFirst[2] = false;
-                			}
-               				cat = "4. Adjectifs";
-               				index = 2;
-               				break;
-               			case 'D': // index = 3
-                			if (isFirst[3]) {
-                				first = true;
-                				isFirst[3] = false;
-                			}
-                			cat = "3. Adverbes";
-                			index = 3;
-                			break;
-                			// If we modify the number of SemanticRoles accepted, 
-                			// then we should add associated case to the present switch.
-                	}
-                	if (first) {
-						if (entry.getKey().strongNumber == (int) entry.getKey().strongNumber) {
-							writers[index] = new PrintWriter("../../View/" + cat + "/(" + String.format("%02d", nbreOfThisStrongEnTout) + ") " + strong.unicode + " (n°" + (int) strong.strongNumber + ").md", "UTF-8");
-											
-						}
-						else { // Pour les strongs de Bunning, ceux en float.
-							writers[index] = new PrintWriter("../../View/" + cat + "/(" + String.format("%02d", nbreOfThisStrongEnTout) + ") " + strong.unicode + " (n°" + strong.strongNumber + ").md", "UTF-8");
-						}
-						strong.unicode = Normalizer.normalize(strong.unicode, Normalizer.Form.NFD);
-						strong.unicode = strong.unicode.replaceAll("\\p{M}", "");
-						String header = "<h2 align=\"center\">" + strong.unicode.toUpperCase() + "</h2>\n\n|Texte grec (" + greekText + ")|Traduction (Martin 1707)|Réference|\n|-----|-----|:---:"; // Add then the KJV translation.
-						writers[index].println(header);
+                	int i = 0;
+					for (Float strongNmbr : temp.strongNumbers) {
+						if (Math.abs(strong.strongNumber - strongNmbr) < 0.001) {
+							                	
+							boolean first = false;
+							String cat = "";
+							int index = 0;
+							char morphValue = temp.morph.get(i).charAt(0);
+							switch(morphValue) {
+								case 'V': // index = 0
+									if (isFirst[0]) {
+										first = true;
+										isFirst[0] = false;
+									}
+									cat = "1. Verbes";
+									index = 0;
+									break;
+								case 'N': // index = 1
+									if (isFirst[1]) {
+										first = true;
+										isFirst[1] = false;
+									}
+									cat = "2. Noms";
+									index = 1;
+									break;
+								case 'A': // index = 2
+									if (isFirst[2]) {
+										first = true;
+										isFirst[2] = false;
+									}
+									cat = "4. Adjectifs";
+									index = 2;
+									break;
+								case 'D': // index = 3
+									if (isFirst[3]) {
+										first = true;
+										isFirst[3] = false;
+									}
+									cat = "3. Adverbes";
+									index = 3;
+									break;
+									// If we modify the number of SemanticRoles accepted, 
+									// then we should add associated case to the present switch.
+							}
+							if (first) {
+								int occ = nbrOccurence(entry.getValue(), strong.strongNumber, morphValue);
+								if (entry.getKey().strongNumber == (int) entry.getKey().strongNumber) {
+									writers[index] = new PrintWriter("../../View/" + cat + "/(" + String.format("%02d", occ) + ") " + strong.unicode + " (n°" + (int) strong.strongNumber + ").md", "UTF-8");
+													
+								}
+								else { // Pour les strongs de Bunning, ceux en float.
+									writers[index] = new PrintWriter("../../View/" + cat + "/(" + String.format("%02d", occ) + ") " + strong.unicode + " (n°" + strong.strongNumber + ").md", "UTF-8");
+								}
+								strong.unicode = Normalizer.normalize(strong.unicode, Normalizer.Form.NFD);
+								strong.unicode = strong.unicode.replaceAll("\\p{M}", "");
+								String header = "<h2 align=\"center\">" + strong.unicode.toUpperCase() + "</h2>\n\n|Texte grec (" + greekText + ")|Traduction (Martin 1707)|Réference|\n|-----|-----|:---:"; // Add then the KJV translation.
+								writers[index].println(header);
+		
+							}
+							String translation = "";
+							for (Reference aaa : passagesTranslated.keySet()) {
+								if(aaa.textFormat.equals(temp.ref.textFormat)) {
+									translation = passagesTranslated.get(aaa).text;
+								}
+							}
+							String line = temp.text + "|" + translation + "|" + temp.ref.textFormat + "|";
+							if(writers[index] != null) // Aussi surprenant que cela puisse paraître, writers[index] a déjà été nul, faute à l'asynchrone ?
+								writers[index].println(line);
+							}
+						i++;
+					}
 
-					}
-					String translation = "";
-					for (Reference aaa : passagesTranslated.keySet()) {
-						if(aaa.textFormat.equals(temp.ref.textFormat)) {
-							translation = passagesTranslated.get(aaa).text;
-						}
-					}
-					String line = temp.text + "|" + translation + "|" + temp.ref.textFormat + "|";
-					if(writers[index] != null) // Aussi surprenant que cela puisse paraître, writers[index] a déjà été nul, faute à l'asynchrone ?
-						writers[index].println(line);
-					// writers[index].close(); ?	
-              }
-            
+              	}
+
             }
 
 			/* ajouter les catégories
