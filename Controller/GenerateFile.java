@@ -34,10 +34,24 @@ public class GenerateFile {
         return occurence;
     }
     
+    PrintWriter newFile(String cat, GreekStrong strong, int occ) throws FileNotFoundException, UnsupportedEncodingException {
+		String file = "../../View/" + cat + "/(" + String.format("%02d", occ) + ") " + strong.unicode + " (n°";
+		file += (strong.strongNumber == (int) strong.strongNumber)
+				? (int) strong.strongNumber : strong.strongNumber;
+		try { 				
+			PrintWriter writer = new PrintWriter(file + ".md", "UTF-8");						
+			strong.unicode = Normalizer.normalize(strong.unicode, Normalizer.Form.NFD);
+			strong.unicode = strong.unicode.replaceAll("\\p{M}", "");
+			String header = "<h2 align=\"center\">" + strong.unicode.toUpperCase() + "</h2>\n\n|Texte grec (" + greekText + ")|Traduction (Martin 1707)|Réference|\n|-----|-----|:---:";							writer.println(header);
+			return writer;
+		} catch (FileNotFoundException | UnsupportedEncodingException tt) {}
+		return null;
+    }
+    
     // s'occuper des hapax legomenon
-    // s'occuper de "tout"
     // ordonner les fichiers
     // afficher dans les titres de dossier le nombre de verbe, d'adjectifs, etc…
+    // voir si le problème de synchronisation ne vient pas de ce fichier.
     
     void generateFiles(HashMap<Reference, Verse> passagesTranslated) throws FileNotFoundException, UnsupportedEncodingException {
         
@@ -52,27 +66,15 @@ public class GenerateFile {
                 boolean[] isFirst = new boolean[s + 1];
                 Arrays.fill(isFirst, Boolean.TRUE);
                 
-                int nbreOfThisStrongEnTout = 0;
+                int allOcc = 0;
                 for (Verse temp : entry.getValue()) {
                     for (Float strongNmbr : temp.strongNumbers) {
                         if (Math.abs(strong.strongNumber - strongNmbr) < 0.001) {
-                            nbreOfThisStrongEnTout++;
+                            allOcc++;
                         }
                     }
                 }
-                if (entry.getKey().strongNumber == (int) entry.getKey().strongNumber) {
-					writers[writers.length-1] = new PrintWriter("../../View/5. Tout/(" + String.format("%02d", nbreOfThisStrongEnTout) + ") " + strong.unicode + " (n°" + (int) strong.strongNumber + ").md", "UTF-8");
-													
-				}
-				else { // Pour les strongs de Bunning, ceux en float.
-					writers[writers.length-1] = new PrintWriter("../../View/5. Tout/(" + String.format("%02d", nbreOfThisStrongEnTout) + ") " + strong.unicode + " (n°" + strong.strongNumber + ").md", "UTF-8");
-				}
-				strong.unicode = Normalizer.normalize(strong.unicode, Normalizer.Form.NFD);
-				strong.unicode = strong.unicode.replaceAll("\\p{M}", "");
-				String header0 = "<h2 align=\"center\">" + strong.unicode.toUpperCase() + "</h2>\n\n|Texte grec (" + greekText + ")|Traduction (Martin 1707)|Réference|\n|-----|-----|:---:"; // Add then the KJV translation.
-				writers[writers.length-1].println(header0);
-                
-                // FUSIONNER LES DEUX FOR ?
+				writers[writers.length-1] = newFile("5. Tout", strong, allOcc);
                 
                 for (Verse temp : entry.getValue()) {
                 
@@ -121,19 +123,8 @@ public class GenerateFile {
 									// then we should add associated case to the present switch.
 							}
 							if (first) {
-								int occ = nbrOccurence(entry.getValue(), strong.strongNumber, morphValue);
-								if (entry.getKey().strongNumber == (int) entry.getKey().strongNumber) {
-									writers[index] = new PrintWriter("../../View/" + cat + "/(" + String.format("%02d", occ) + ") " + strong.unicode + " (n°" + (int) strong.strongNumber + ").md", "UTF-8");
-													
-								}
-								else { // Pour les strongs de Bunning, ceux en float.
-									writers[index] = new PrintWriter("../../View/" + cat + "/(" + String.format("%02d", occ) + ") " + strong.unicode + " (n°" + strong.strongNumber + ").md", "UTF-8");
-								}
-								strong.unicode = Normalizer.normalize(strong.unicode, Normalizer.Form.NFD);
-								strong.unicode = strong.unicode.replaceAll("\\p{M}", "");
-								String header = "<h2 align=\"center\">" + strong.unicode.toUpperCase() + "</h2>\n\n|Texte grec (" + greekText + ")|Traduction (Martin 1707)|Réference|\n|-----|-----|:---:"; // Add then the KJV translation.
-								writers[index].println(header);
-		
+							    int occ = nbrOccurence(entry.getValue(), strong.strongNumber, morphValue);
+								newFile(cat, strong, occ);
 							}
 							String translation = "";
 							for (Reference aaa : passagesTranslated.keySet()) {
@@ -144,7 +135,7 @@ public class GenerateFile {
 							String line = temp.text + "|" + translation + "|" + temp.ref.textFormat + "|";
 							if(writers[index] != null) {// Aussi surprenant que cela puisse paraître, writers[index] a déjà été nul, faute à l'asynchrone ?
 								writers[index].println(line);
-								writers[writers.length-1].println(line); // Le "Tout".
+								writers[writers.length-1].println(line); // Pour le "Tout".
 							}
 							}
 						i++;
