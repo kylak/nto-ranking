@@ -47,9 +47,9 @@ public class GenerateFile {
 			FileWriter writer = new FileWriter(nameFile);
 			String tmp = strong.unicode;					
 			tmp = Normalizer.normalize(tmp, Normalizer.Form.NFD);
-			tmp = strong.unicode.replaceAll("\\p{M}", "");
+			tmp = tmp.replaceAll("\\p{M}", "");
 			String header = "<h2 align=\"center\">" + tmp.toUpperCase() + "</h2>\n\n|Texte grec (";
-			header += greekText + ")|Traduction (Martin 1707)|Réference|\n|-----|-----|:---:";
+			header += greekText + ")|Traduction (Martin 1707)|Réference|\n|-----|-----|:---:\n";
 			writer.write(header);
 			writer.close();
 		} catch (IOException tt) {}
