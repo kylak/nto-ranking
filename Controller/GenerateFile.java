@@ -34,12 +34,23 @@ public class GenerateFile {
         return occurence;
     }
     
+    // s'occuper des hapax legomenon
+    // s'occuper de "tout"
+    // ordonner les fichiers
+    // afficher dans les titres de dossier le nombre de verbe, d'adjectifs, etc…
+    
     void generateFiles(HashMap<Reference, Verse> passagesTranslated) throws FileNotFoundException, UnsupportedEncodingException {
         
         try
         {
             for (HashMap.Entry<GreekStrong, ArrayList<Verse>> entry : classifyProcess.interestingClassifiedVerses.entrySet()) {
+                
                 GreekStrong strong = entry.getKey();
+                
+                int s = 4; // Number of SemanticRoles accepted.
+                PrintWriter[] writers = new PrintWriter[s + 1]; // 0: verbe, 1: nom, 2: adverbe, 3: adjectifs, 4: tout. 
+                boolean[] isFirst = new boolean[s + 1];
+                Arrays.fill(isFirst, Boolean.TRUE);
                 
                 int nbreOfThisStrongEnTout = 0;
                 for (Verse temp : entry.getValue()) {
@@ -49,13 +60,19 @@ public class GenerateFile {
                         }
                     }
                 }
+                if (entry.getKey().strongNumber == (int) entry.getKey().strongNumber) {
+					writers[writers.length-1] = new PrintWriter("../../View/5. Tout/(" + String.format("%02d", nbreOfThisStrongEnTout) + ") " + strong.unicode + " (n°" + (int) strong.strongNumber + ").md", "UTF-8");
+													
+				}
+				else { // Pour les strongs de Bunning, ceux en float.
+					writers[writers.length-1] = new PrintWriter("../../View/5. Tout/(" + String.format("%02d", nbreOfThisStrongEnTout) + ") " + strong.unicode + " (n°" + strong.strongNumber + ").md", "UTF-8");
+				}
+				strong.unicode = Normalizer.normalize(strong.unicode, Normalizer.Form.NFD);
+				strong.unicode = strong.unicode.replaceAll("\\p{M}", "");
+				String header0 = "<h2 align=\"center\">" + strong.unicode.toUpperCase() + "</h2>\n\n|Texte grec (" + greekText + ")|Traduction (Martin 1707)|Réference|\n|-----|-----|:---:"; // Add then the KJV translation.
+				writers[writers.length-1].println(header0);
                 
                 // FUSIONNER LES DEUX FOR ?
-                
-                int s = 4; // Number of SemanticRoles accepted.
-                PrintWriter[] writers = new PrintWriter[s + 1]; // 0: verbe, 1: nom, 2: adverbe, 3: adjectifs, 4: tout. 
-                boolean[] isFirst = new boolean[s + 1];
-                Arrays.fill(isFirst, Boolean.TRUE);
                 
                 for (Verse temp : entry.getValue()) {
                 
@@ -125,8 +142,10 @@ public class GenerateFile {
 								}
 							}
 							String line = temp.text + "|" + translation + "|" + temp.ref.textFormat + "|";
-							if(writers[index] != null) // Aussi surprenant que cela puisse paraître, writers[index] a déjà été nul, faute à l'asynchrone ?
+							if(writers[index] != null) {// Aussi surprenant que cela puisse paraître, writers[index] a déjà été nul, faute à l'asynchrone ?
 								writers[index].println(line);
+								writers[writers.length-1].println(line); // Le "Tout".
+							}
 							}
 						i++;
 					}
