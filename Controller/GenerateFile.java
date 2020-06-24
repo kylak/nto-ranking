@@ -68,7 +68,7 @@ public class GenerateFile {
                 
                 GreekStrong strong = entry.getKey();
                	
-                int s = 4; // Number of SemanticRoles accepted.
+                int s = 5; // Number of SemanticRoles accepted.
                 String[] writersTitle = new String[s + 1]; // 0: verbe, 1: nom, 2: adverbe, 3: adjectifs, 4: tout. 
                 boolean[] isFirst = new boolean[s + 1];
                 Arrays.fill(isFirst, Boolean.TRUE);
@@ -82,7 +82,7 @@ public class GenerateFile {
                         }
                     }
                 }
-                String nameToutFile = createNameFile("5. Tout", strong, allOcc);
+                String nameToutFile = createNameFile("6. Tout", strong, allOcc);
 				newFile(nameToutFile, strong);
 				writersTitle[writersTitle.length-1] = nameToutFile;
                 
@@ -129,6 +129,14 @@ public class GenerateFile {
 									cat = "3. Adverbes";
 									index = 3;
 									break;
+								default:
+									if (isFirst[4]) {
+										first = true;
+										isFirst[4] = false;
+									}
+									System.out.println(morphValue + " : " + strong.unicode + " : " + temp.ref.textFormat);
+									cat = "5. Autres";
+									break;
 									// If we modify the number of SemanticRoles accepted, 
 									// then we should add associated case to the present switch.
 							}
@@ -150,20 +158,18 @@ public class GenerateFile {
 								}
 							}
 							String line = temp.text + "|" + translation + "|" + temp.ref.textFormat + "|";
-							System.out.println(index);
-							// Aussi surprenant que cela puisse paraître, writers[index] a déjà été nul, faute à l'asynchrone ?
-								try {
-									FileWriter writer = new FileWriter(nameFile, true);
-									writer.append(line);
-									writer.close();
-									// Pour le "Tout".
-									FileWriter ToutWriter = new FileWriter(writersTitle[writersTitle.length-1]);
-									ToutWriter.append(line);
-									ToutWriter.close();
-								}
-								catch (IOException t) {}
-							
+							// System.out.println(index);
+							try {
+								FileWriter writer = new FileWriter(nameFile, true);
+								writer.append(line);
+								writer.close();
+								// Pour le "Tout".
+								FileWriter ToutWriter = new FileWriter(writersTitle[writersTitle.length-1]);
+								ToutWriter.append(line);
+								ToutWriter.close();
 							}
+							catch (IOException t) {}
+						}
 						i++;
 					}
 
