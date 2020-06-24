@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.concurrent.*;
 import java.lang.InterruptedException;
+import java.io.IOException;
 
 public class Start {
     
@@ -49,7 +50,13 @@ public class Start {
 		System.out.println("Data classified in approximatively " + time + "ms.");
 		Classify cVerses = null;
 		try {
-			cVerses = futureTask.get(); 
+			cVerses = futureTask.get();
+			for(HashMap.Entry<GreekStrong, ArrayList<Verse>> entry : cVerses.interestingClassifiedVerses.entrySet()) {
+				System.out.println(entry.getKey().strongNumber);
+				for (Verse temp : entry.getValue()) {
+                    System.out.println(temp.ref.textFormat);
+                }
+			}
 		}
 		catch (InterruptedException | ExecutionException e) {}
 		final Classify classifiedVerses = cVerses;
@@ -66,7 +73,8 @@ public class Start {
 			gf = futureTask2.get();
 			gf.generateFiles(findings.passagesTranslated);
 		}
-		catch (InterruptedException | ExecutionException | FileNotFoundException | UnsupportedEncodingException e) {}
+		catch (InterruptedException | ExecutionException | FileNotFoundException | UnsupportedEncodingException t) {}
+		catch (IOException e) {}
 		long time1 = System.currentTimeMillis() - start1;
 		double seconds1 = time1 / 1000.0;
 		System.out.println("Classified data generated in approximatively " + (float)seconds1 + "s.");

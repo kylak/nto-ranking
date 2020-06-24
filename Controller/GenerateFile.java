@@ -8,6 +8,7 @@ import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 import java.text.Normalizer;
 import java.util.Arrays;
+import java.io.FileWriter;
 
 public class GenerateFile {
   
@@ -34,18 +35,24 @@ public class GenerateFile {
         return occurence;
     }
     
-    PrintWriter newFile(String cat, GreekStrong strong, int occ) throws FileNotFoundException, UnsupportedEncodingException {
-		String file = "../../View/" + cat + "/(" + String.format("%02d", occ) + ") " + strong.unicode + " (n°";
+    String createNameFile(String cat, GreekStrong strong, int occ) {
+    	String file = "../../View/" + cat + "/(" + String.format("%02d", occ) + ") " + strong.unicode + " (n°";
 		file += (strong.strongNumber == (int) strong.strongNumber)
 				? (int) strong.strongNumber : strong.strongNumber;
-		try { 				
-			PrintWriter writer = new PrintWriter(file + ".md", "UTF-8");						
-			strong.unicode = Normalizer.normalize(strong.unicode, Normalizer.Form.NFD);
-			strong.unicode = strong.unicode.replaceAll("\\p{M}", "");
-			String header = "<h2 align=\"center\">" + strong.unicode.toUpperCase() + "</h2>\n\n|Texte grec (" + greekText + ")|Traduction (Martin 1707)|Réference|\n|-----|-----|:---:";							writer.println(header);
-			return writer;
-		} catch (FileNotFoundException | UnsupportedEncodingException tt) {}
-		return null;
+		return file + ").md";
+    }
+    
+    void newFile(String nameFile, GreekStrong strong) throws IOException {
+		try { 		
+			FileWriter writer = new FileWriter(nameFile);
+			String tmp = strong.unicode;					
+			tmp = Normalizer.normalize(tmp, Normalizer.Form.NFD);
+			tmp = strong.unicode.replaceAll("\\p{M}", "");
+			String header = "<h2 align=\"center\">" + tmp.toUpperCase() + "</h2>\n\n|Texte grec (";
+			header += greekText + ")|Traduction (Martin 1707)|Réference|\n|-----|-----|:---:";
+			writer.write(header);
+			writer.close();
+		} catch (IOException tt) {}
     }
     
     // s'occuper des hapax legomenon
@@ -53,18 +60,19 @@ public class GenerateFile {
     // afficher dans les titres de dossier le nombre de verbe, d'adjectifs, etc…
     // voir si le problème de synchronisation ne vient pas de ce fichier.
     
-    void generateFiles(HashMap<Reference, Verse> passagesTranslated) throws FileNotFoundException, UnsupportedEncodingException {
+    void generateFiles(HashMap<Reference, Verse> passagesTranslated) throws FileNotFoundException, UnsupportedEncodingException, IOException{
         
         try
         {
             for (HashMap.Entry<GreekStrong, ArrayList<Verse>> entry : classifyProcess.interestingClassifiedVerses.entrySet()) {
                 
                 GreekStrong strong = entry.getKey();
-                
+               	
                 int s = 4; // Number of SemanticRoles accepted.
-                PrintWriter[] writers = new PrintWriter[s + 1]; // 0: verbe, 1: nom, 2: adverbe, 3: adjectifs, 4: tout. 
+                String[] writersTitle = new String[s + 1]; // 0: verbe, 1: nom, 2: adverbe, 3: adjectifs, 4: tout. 
                 boolean[] isFirst = new boolean[s + 1];
                 Arrays.fill(isFirst, Boolean.TRUE);
+                String nameFile = "";
                 
                 int allOcc = 0;
                 for (Verse temp : entry.getValue()) {
@@ -74,7 +82,9 @@ public class GenerateFile {
                         }
                     }
                 }
-				writers[writers.length-1] = newFile("5. Tout", strong, allOcc);
+                String nameToutFile = createNameFile("5. Tout", strong, allOcc);
+				newFile(nameToutFile, strong);
+				writersTitle[writersTitle.length-1] = nameToutFile;
                 
                 for (Verse temp : entry.getValue()) {
                 
@@ -122,9 +132,16 @@ public class GenerateFile {
 									// If we modify the number of SemanticRoles accepted, 
 									// then we should add associated case to the present switch.
 							}
+							nameFile = createNameFile(cat, strong, allOcc);
 							if (first) {
 							    int occ = nbrOccurence(entry.getValue(), strong.strongNumber, morphValue);
-								newFile(cat, strong, occ);
+								newFile(nameFile, strong);
+								for(int k = 0; k < writersTitle.length; k++) {
+									if (k == index) {
+										writersTitle[k] = nameFile;
+										break;
+									} 
+								}
 							}
 							String translation = "";
 							for (Reference aaa : passagesTranslated.keySet()) {
@@ -133,10 +150,19 @@ public class GenerateFile {
 								}
 							}
 							String line = temp.text + "|" + translation + "|" + temp.ref.textFormat + "|";
-							if(writers[index] != null) {// Aussi surprenant que cela puisse paraître, writers[index] a déjà été nul, faute à l'asynchrone ?
-								writers[index].println(line);
-								writers[writers.length-1].println(line); // Pour le "Tout".
-							}
+							System.out.println(index);
+							// Aussi surprenant que cela puisse paraître, writers[index] a déjà été nul, faute à l'asynchrone ?
+								try {
+									FileWriter writer = new FileWriter(nameFile, true);
+									writer.append(line);
+									writer.close();
+									// Pour le "Tout".
+									FileWriter ToutWriter = new FileWriter(writersTitle[writersTitle.length-1]);
+									ToutWriter.append(line);
+									ToutWriter.close();
+								}
+								catch (IOException t) {}
+							
 							}
 						i++;
 					}
