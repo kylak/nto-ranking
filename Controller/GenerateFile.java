@@ -44,7 +44,6 @@ public class GenerateFile {
 		else {
 			file += strong.strongNumber;
 		}
-		file += strong.strongNumber == (int)(strong.strongNumber) ? (int) strong.strongNumber : strong.strongNumber;
 		return file + ").md";
     }
     
