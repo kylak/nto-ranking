@@ -60,9 +60,39 @@ public class GenerateFile {
 		} catch (IOException tt) {}
     }
     
-    // s'occuper des hapax legomenon
-    // ordonner les fichiers
-    // afficher dans les titres de dossier le nombre de verbe, d'adjectifs, etc…
+    String createNameHLFile(String cat, int occ) {
+    	return "../../View/" + cat + "/(" + String.format("%02d", occ) + ") HapaxLegomenon.md";	
+    }
+    
+    void newHLFile(String fileName) {
+    	try { 		
+			FileWriter writer = new FileWriter(fileName);
+			String header = "|Greek word (with Strong number)|KJV translation|New Testament reference|\n|:---:|-----|:---:|\n";
+			writer.write(header);
+			writer.close();
+		} catch (IOException tt) {}
+    }
+    
+    String writeInHL(GreekStrong s, Verse v) {
+    	String line = "";
+    	if (s.strongNumber == (int) s.strongNumber) {
+        	String Formated_KJV_Def = "";
+            if (s.KJV_Def != null) {
+            	Formated_KJV_Def = s.KJV_Def.replaceAll("\n", " ");
+            }
+            Formated_KJV_Def = Formated_KJV_Def.replaceAll("\t", " ");
+            line = s.unicode + " (n°" + (int)s.strongNumber + ")|" + Formated_KJV_Def + "|" + v.ref.textFormat + "|";
+        }
+        else {
+        	line = s.unicode + " (n°" + s.strongNumber + ")|?|" + v.ref.textFormat + "|";
+        }
+        return line + "\n";
+    }
+    
+    // s'occuper des hapax legomenon puis merge sur master.
+    // ordonner les fichiers puis merge sur master.
+    // afficher dans les titres de dossier le nombre de verbe, d'adjectifs, etc… puis merge sur master.
+    
     // voir si le problème ne viendrait pas de passage de référence d'objet à des fonctions.
     // supprimer la notion d'index et le tableau de string ?
     
@@ -81,10 +111,8 @@ public class GenerateFile {
                 GreekStrong strong = entry.getKey();
                	
                 int s = 5; // Number of SemanticRoles accepted.
-                String[] writersTitle = new String[s + 1]; // 0: verbe, 1: nom, 2: adverbe, 3: adjectifs, 4: tout. 
                 boolean[] isFirst = new boolean[s + 1];
                 Arrays.fill(isFirst, Boolean.TRUE);
-                String nameFile = "";
                 
                 int allOcc = 0;
                 for (Verse temp : entry.getValue()) {
@@ -96,7 +124,6 @@ public class GenerateFile {
                 }
                 String nameToutFile = createNameFile("6. Tout", strong, allOcc);
 				newFile(nameToutFile, strong);
-				writersTitle[writersTitle.length-1] = nameToutFile;
                 
                 for (Verse temp : entry.getValue()) {
                 
@@ -106,7 +133,6 @@ public class GenerateFile {
 							                	
 							boolean first = false;
 							String cat = "";
-							int index = 0;
 							char morphValue = temp.morph.get(i).charAt(0);
 							switch(morphValue) {
 								case 'V': // index = 0
@@ -115,7 +141,6 @@ public class GenerateFile {
 										isFirst[0] = false;
 									}
 									cat = "1. Verbes";
-									index = 0;
 									break;
 								case 'N': // index = 1
 									if (isFirst[1]) {
@@ -123,7 +148,6 @@ public class GenerateFile {
 										isFirst[1] = false;
 									}
 									cat = "2. Noms";
-									index = 1;
 									break;
 								case 'A': // index = 2
 									if (isFirst[2]) {
@@ -131,7 +155,6 @@ public class GenerateFile {
 										isFirst[2] = false;
 									}
 									cat = "4. Adjectifs";
-									index = 2;
 									break;
 								case 'D': // index = 3
 									if (isFirst[3]) {
@@ -139,14 +162,12 @@ public class GenerateFile {
 										isFirst[3] = false;
 									}
 									cat = "3. Adverbes";
-									index = 3;
 									break;
 								default:
 									if (isFirst[4]) {
 										first = true;
 										isFirst[4] = false;
 									}
-									System.out.println(morphValue + " : " + strong.unicode + " : " + temp.ref.textFormat);
 									cat = "5. Autres (pour débogage)";
 									break;
 									// If we modify the number of SemanticRoles accepted, 
@@ -155,15 +176,10 @@ public class GenerateFile {
 							/* Partie je trouve à alléger
 							 (faisable, il me semble, en utilisant PrintWriter à la place de FileWriter). */
 							int occ = nbrOccurence(entry.getValue(), strong.strongNumber, morphValue);
-							nameFile = createNameFile(cat, strong, occ);
+							String nameFile = createNameFile(cat, strong, occ);
 							if (first) {
-								newFile(nameFile, strong);
-								for(int k = 0; k < writersTitle.length; k++) {
-									if (k == index) {
-										writersTitle[k] = nameFile;
-										break;
-									} 
-								}
+								if (occ == 1) newHLFile("../../View/" + cat + "/HapaxLegomenon.md");
+								else newFile(nameFile, strong);
 							}
 							String translation = "";
 							for (Reference aaa : passagesTranslated.keySet()) {
@@ -171,16 +187,23 @@ public class GenerateFile {
 									translation = passagesTranslated.get(aaa).text;
 								}
 							}
-							String line = temp.text + "|" + translation + "|" + temp.ref.textFormat + "|\n";
-							// System.out.println(index);
 							try {
-								FileWriter writer = new FileWriter(nameFile, true);
-								writer.append(line);
-								writer.close();
-								// Pour le "Tout".
-								FileWriter ToutWriter = new FileWriter(writersTitle[writersTitle.length-1], true);
-								ToutWriter.append(line);
-								ToutWriter.close();
+								if (occ == 1) { // hapax legomenon
+									FileWriter writerHL = new FileWriter("../../View/" + cat + "/HapaxLegomenon.md", true);
+									String line = writeInHL(entry.getKey(), temp);
+									writerHL.append(line);
+									writerHL.close();
+								}
+								else {
+									FileWriter writer = new FileWriter(nameFile, true);
+									String line = temp.text + "|" + translation + "|" + temp.ref.textFormat + "|\n";
+									writer.append(line);
+									writer.close();
+									// Pour le "Tout".
+									FileWriter ToutWriter = new FileWriter(nameToutFile, true);
+									ToutWriter.append(line);
+									ToutWriter.close();
+								}
 							}
 							catch (IOException t) {}
 						}
@@ -188,31 +211,93 @@ public class GenerateFile {
 					}
 
               	}
-
+         }
+         
+            int allOcc = classifyProcess.uniqueThematicWords.size();
+            if (allOcc > 0) {
+               	String nameToutFile = createNameHLFile("6. Tout", allOcc);
+				newHLFile(nameToutFile);
             }
+            //est-ce qu'un hapax l'est même si le mot est plusieurs fois dans le même verset ? si oui, est-ce géré ?
 
-			/* ajouter les catégories
-            PrintWriter writer2 = new PrintWriter("../../View/tout/HapaxLegomenon.md", "UTF-8");
-            String header = "|Greek word (with Strong number)|KJV translation|New Testament reference|\n|:---:|-----|:---:|";
-            writer2.println(header);
             for (HashMap.Entry<GreekStrong, Verse> entry : classifyProcess.uniqueThematicWords.entrySet()) {
-                String line = "";
-                if (entry.getKey().strongNumber == (int) entry.getKey().strongNumber) {
-                    String Formated_KJV_Def = "";
-                    if (entry.getKey().KJV_Def != null) {
-                        Formated_KJV_Def = entry.getKey().KJV_Def.replaceAll("\n", " ");
-                    }
-                    Formated_KJV_Def = Formated_KJV_Def.replaceAll("\t", " ");
-                    line = entry.getKey().unicode + " (n°" + (int)entry.getKey().strongNumber + ")|" + Formated_KJV_Def + "|" + entry.getValue().ref.textFormat + "|";
-                }
-                else {
-                    line = entry.getKey().unicode + " (n°" + entry.getKey().strongNumber + ")|?|" + entry.getValue().ref.textFormat + "|";
-                }
-                writer2.println(line);
+            	GreekStrong strong = entry.getKey();
+				int s = 4;
+				boolean[] isFirst = new boolean[s + 1];
+				Arrays.fill(isFirst, Boolean.TRUE);
+
+                	int i = 0;
+					for (Float strongNmbr : entry.getValue().strongNumbers) {
+						if (Math.abs(strong.strongNumber - strongNmbr) < 0.001) {
+							                	
+							boolean first = false;
+							String cat = "";
+							char morphValue = entry.getValue().morph.get(i).charAt(0);
+							switch(morphValue) {
+								case 'V':
+									if (isFirst[0]) {
+										first = true;
+										isFirst[0] = false;
+									}
+									cat = "1. Verbes";
+									break;
+								case 'N':
+									if (isFirst[1]) {
+										first = true;
+										isFirst[1] = false;
+									}
+									cat = "2. Noms";
+									break;
+								case 'A':
+									if (isFirst[2]) {
+										first = true;
+										isFirst[2] = false;
+									}
+									cat = "4. Adjectifs";
+									break;
+								case 'D':
+									if (isFirst[3]) {
+										first = true;
+										isFirst[3] = false;
+									}
+									cat = "3. Adverbes";
+									break;
+								default:
+									if (isFirst[4]) {
+										first = true;
+										isFirst[4] = false;
+									}
+									cat = "5. Autres (pour débogage)";
+									break;
+									// If we modify the number of SemanticRoles accepted, 
+									// then we should add associated case to the present switch.
+							}
+							File tmp = new File("../../View/" + cat + "/HapaxLegomenon.md");
+							if (!tmp.exists()) {
+								newHLFile("../../View/" + cat + "/HapaxLegomenon.md");
+							}
+							try {
+								FileWriter writerHL = new FileWriter("../../View/" + cat + "/HapaxLegomenon.md", true);
+								String line = writeInHL(entry.getKey(), entry.getValue());
+								writerHL.append(line);
+								writerHL.close();
+								// Pour le "Tout".
+								FileWriter ToutWriterHL = new FileWriter(createNameHLFile("6. Tout", allOcc), true);
+								ToutWriterHL.append(line);
+								ToutWriterHL.close();
+							}
+							catch (IOException t) {}
+						}
+						i++;
+					}
+					
+              	}
+
             }
-            writer2.close();
-            */
-        }
+        
         catch (FileNotFoundException | UnsupportedEncodingException tt) {}
+        
+        // compter le nombre d'hapax
+
     }
 }

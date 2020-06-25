@@ -17,7 +17,7 @@ public class Classify {
 	HashMap<Reference, Verse[]> passages = new HashMap<Reference, Verse[]>();
     Filter filter;
     HashMap<GreekStrong, ArrayList<Verse>> interestingClassifiedVerses = new HashMap<GreekStrong, ArrayList<Verse>>();
-    HashMap<GreekStrong, Verse> uniqueThematicWords = new HashMap<GreekStrong, Verse>();
+    HashMap<GreekStrong, Verse> uniqueThematicWords = new HashMap<GreekStrong, Verse>(); // 
     
     public Classify (HashMap<Reference, Verse[]> givenPassages) {
         passages = givenPassages;
