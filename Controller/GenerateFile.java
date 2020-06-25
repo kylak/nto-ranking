@@ -9,7 +9,10 @@ import java.io.UnsupportedEncodingException;
 import java.text.Normalizer;
 import java.util.Arrays;
 import java.io.FileWriter;
-import java.util.Scanner; 
+import java.util.Scanner;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.io.BufferedReader;
+import java.io.FileReader;
 
 public class GenerateFile {
   
@@ -62,7 +65,7 @@ public class GenerateFile {
     }
     
     String createNameHLFile(String cat, int occ) {
-    	return "../../View/" + cat + "/(" + String.format("%02d", occ) + ") HapaxLegomenon.md";	
+    	return "../../View/" + cat + "/HapaxLegomenon (" + String.format("%02d", occ) + ").md";	
     }
     
     void newHLFile(String fileName) {
@@ -105,6 +108,14 @@ public class GenerateFile {
 		return false;
     }
     
+    int lineNumber(String path) throws FileNotFoundException, IOException {
+		BufferedReader reader = new BufferedReader(new FileReader(path));
+		int lines = 0;
+		while (reader.readLine() != null) lines++;
+		reader.close();
+		return lines;
+    } 
+    
     // s'occuper des hapax legomenon puis merge sur master.
     // ordonner les fichiers puis merge sur master.
     // afficher dans les titres de dossier le nombre de verbe, d'adjectifs, etc… puis merge sur master.
@@ -140,16 +151,17 @@ public class GenerateFile {
                 }
                 String nameToutFile = createNameFile("6. Tout", strong, allOcc);
 				newFile(nameToutFile, strong);
-                
+                System.out.println("new for");
                 for (Verse temp : entry.getValue()) {
                 
-                	int i = 0;
+                	AtomicInteger i = new AtomicInteger(0);;
+                	synchronized(i) {
 					for (Float strongNmbr : temp.strongNumbers) {
 						if (Math.abs(strong.strongNumber - strongNmbr) < 0.001) {
 							                	
 							boolean first = false;
 							String cat = "";
-							char morphValue = temp.morph.get(i).charAt(0);
+							char morphValue = temp.morph.get(i.get()).charAt(0);
 							switch(morphValue) {
 								case 'V': // index = 0
 									if (isFirst[0]) {
@@ -193,8 +205,8 @@ public class GenerateFile {
 							 (faisable, il me semble, en utilisant PrintWriter à la place de FileWriter). */
 							int occ = nbrOccurence(entry.getValue(), strong.strongNumber, morphValue);
 							String nameFile = createNameFile(cat, strong, occ);
-							if(occ == 0) System.out.println(nameFile);
-							if (first == false && verseAlreadyAdded(nameFile, temp.ref.textFormat)) continue;
+							System.out.println("i: " + i.get() + " -> " + nameFile);
+							if (/*first == false && */verseAlreadyAdded(nameFile, temp.ref.textFormat)) continue;
 							if (first) {
 								if (occ == 1) newHLFile("../../View/" + cat + "/HapaxLegomenon.md");
 								else newFile(nameFile, strong);
@@ -211,6 +223,7 @@ public class GenerateFile {
 									String line = writeInHL(entry.getKey(), temp);
 									writerHL.append(line);
 									writerHL.close();
+									// On ne prend pas en compte les hapax legomenon qui ne le sont qu'au niveau de catégorie grammaticale.
 								}
 								else {
 									FileWriter writer = new FileWriter(nameFile, true);
@@ -225,9 +238,10 @@ public class GenerateFile {
 							}
 							catch (IOException t) {}
 						}
-						i++;
+						i.incrementAndGet();
 					}
 
+              	}
               	}
          }
          
@@ -235,8 +249,8 @@ public class GenerateFile {
          	String nameToutFileHL = "";
             int allOcc = classifyProcess.uniqueThematicWords.size(); //
             if (allOcc > 0) {
-               	String nameToutFile = createNameHLFile("6. Tout", allOcc);
-				newHLFile(nameToutFile);
+               	nameToutFileHL = createNameHLFile("6. Tout", allOcc);
+				newHLFile(nameToutFileHL);
             }
 
             for (HashMap.Entry<GreekStrong, Verse> entry : classifyProcess.uniqueThematicWords.entrySet()) {
@@ -278,7 +292,8 @@ public class GenerateFile {
 								writerHL.close();
 								// Pour le "Tout".
 								FileWriter ToutWriterHL = new FileWriter(nameToutFileHL, true);
-								ToutWriterHL.append(line);
+								String line2 = writeInHL(entry.getKey(), entry.getValue());
+								ToutWriterHL.append(line2);
 								ToutWriterHL.close();
 							}
 							catch (IOException t) {}
@@ -295,6 +310,15 @@ public class GenerateFile {
         catch (FileNotFoundException | UnsupportedEncodingException tt) {}
         
         // compter le nombre d'hapax
+        String morphs[] = {"1. Verbes", "2. Noms", "4. Adjectifs", "3. Adverbes", "5. Autres (pour débogage)"};
+        for (String morph : morphs) { 
+        	String path = "../../View/" + morph + "/HapaxLegomenon.md";
+      		File f1 = new File(path);
+      		if(f1.exists()) {
+				File f2 = new File(createNameHLFile(morph, lineNumber(path) - 2));
+				boolean b = f1.renameTo(f2);
+			}
+        }
 
     }
 }
