@@ -218,7 +218,6 @@ public class GenerateFile {
                	String nameToutFile = createNameHLFile("6. Tout", allOcc);
 				newHLFile(nameToutFile);
             }
-            //est-ce qu'un hapax l'est même si le mot est plusieurs fois dans le même verset ? si oui, est-ce géré ?
 
             for (HashMap.Entry<GreekStrong, Verse> entry : classifyProcess.uniqueThematicWords.entrySet()) {
             	GreekStrong strong = entry.getKey();
