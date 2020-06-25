@@ -54,7 +54,7 @@ public class GenerateFile {
 			tmp = Normalizer.normalize(tmp, Normalizer.Form.NFD);
 			tmp = tmp.replaceAll("\\p{M}", "");
 			String header = "<h2 align=\"center\">" + tmp.toUpperCase() + "</h2>\n\n|Texte grec (";
-			header += greekText + ")|Traduction (Martin 1707)|Réference|\n|-----|-----|:---:\n";
+			header += greekText + ")|Traduction (Martin 1707)|Référence|\n|-----|-----|:---:\n";
 			writer.write(header);
 			writer.close();
 		} catch (IOException tt) {}
