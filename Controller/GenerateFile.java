@@ -157,7 +157,7 @@ public class GenerateFile {
 									translation = passagesTranslated.get(aaa).text;
 								}
 							}
-							String line = temp.text + "|" + translation + "|" + temp.ref.textFormat + "|";
+							String line = temp.text + "|" + translation + "|" + temp.ref.textFormat + "|\n";
 							// System.out.println(index);
 							try {
 								FileWriter writer = new FileWriter(nameFile, true);
