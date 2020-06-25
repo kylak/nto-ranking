@@ -58,7 +58,11 @@ public class GenerateFile {
     // s'occuper des hapax legomenon
     // ordonner les fichiers
     // afficher dans les titres de dossier le nombre de verbe, d'adjectifs, etc…
+    // voir si le problème ne viendrait pas de passage de référence d'objet à des fonctions.
+    // supprimer la notion d'index et le tableau de string ?
+    
     // voir si le problème de synchronisation ne vient pas de ce fichier.
+    // le problème de sychronisation vient ne pas seulement de ce fichier, s'il vient aussi de ce fichier.
     
     void generateFiles(HashMap<Reference, Verse> passagesTranslated) throws FileNotFoundException, UnsupportedEncodingException, IOException{
         
@@ -135,11 +139,13 @@ public class GenerateFile {
 										isFirst[4] = false;
 									}
 									System.out.println(morphValue + " : " + strong.unicode + " : " + temp.ref.textFormat);
-									cat = "5. Autres";
+									cat = "5. Autres (pour débogage)";
 									break;
 									// If we modify the number of SemanticRoles accepted, 
 									// then we should add associated case to the present switch.
 							}
+							/* Partie je trouve à alléger
+							 (faisable, il me semble, en utilisant PrintWriter à la place de FileWriter). */
 							int occ = nbrOccurence(entry.getValue(), strong.strongNumber, morphValue);
 							nameFile = createNameFile(cat, strong, occ);
 							if (first) {
@@ -164,7 +170,7 @@ public class GenerateFile {
 								writer.append(line);
 								writer.close();
 								// Pour le "Tout".
-								FileWriter ToutWriter = new FileWriter(writersTitle[writersTitle.length-1]);
+								FileWriter ToutWriter = new FileWriter(writersTitle[writersTitle.length-1], true);
 								ToutWriter.append(line);
 								ToutWriter.close();
 							}
