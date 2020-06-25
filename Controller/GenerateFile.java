@@ -116,7 +116,6 @@ public class GenerateFile {
 		return lines;
     } 
     
-    // s'occuper des hapax legomenon puis merge sur master.
     // ordonner les fichiers puis merge sur master.
     // afficher dans les titres de dossier le nombre de verbe, d'adjectifs, etc… puis merge sur master.
     
@@ -312,13 +311,33 @@ public class GenerateFile {
         // compter le nombre d'hapax
         String morphs[] = {"1. Verbes", "2. Noms", "4. Adjectifs", "3. Adverbes", "5. Autres (pour débogage)"};
         for (String morph : morphs) { 
+        
         	String path = "../../View/" + morph + "/HapaxLegomenon.md";
       		File f1 = new File(path);
       		if(f1.exists()) {
 				File f2 = new File(createNameHLFile(morph, lineNumber(path) - 2));
 				boolean b = f1.renameTo(f2);
 			}
+			
+			String path2 = "../../View/" + morph;
+			int nbrF = new File( "../../View/" + morph + "/").listFiles().length - 1;
+      		File f3 = new File(path2);
+      		if(f3.isDirectory()) {
+				File f4 = new File(path2 + " (" + nbrF + ")"); // -1 due to the hapax legomenon file.
+				System.out.println(path2 + " (" + nbrF + ")");
+				boolean b = f3.renameTo(f4);
+			}
+
         }
+        
+        String path2 = "../../View/6. Tout";
+		int nbrF = new File( "../../View/6. Tout/").listFiles().length - 1;
+      	File f3 = new File(path2);
+      	if(f3.isDirectory()) {
+			File f4 = new File(path2 + " (" + nbrF + ")"); // -1 due to the hapax legomenon file.
+			System.out.println(path2 + " (" + nbrF + ")");
+			boolean b = f3.renameTo(f4);
+		}
 
     }
 }
