@@ -9,6 +9,7 @@ import java.io.UnsupportedEncodingException;
 import java.text.Normalizer;
 import java.util.Arrays;
 import java.io.FileWriter;
+import java.util.Scanner; 
 
 public class GenerateFile {
   
@@ -87,6 +88,21 @@ public class GenerateFile {
         	line = s.unicode + " (n°" + s.strongNumber + ")|?|" + v.ref.textFormat + "|";
         }
         return line + "\n";
+    }
+    
+    boolean verseAlreadyAdded(String filename, String ref) {
+		File file = new File(filename);
+		try {
+			Scanner scanner = new Scanner(file);
+			//now read the file line by line...
+			int lineNum = 0;
+			while (scanner.hasNextLine()) {
+				String line = scanner.nextLine();
+				lineNum++;  
+				if(line.contains(ref)) return true;
+			}
+		} catch(FileNotFoundException e) {}
+		return false;
     }
     
     // s'occuper des hapax legomenon puis merge sur master.
@@ -177,6 +193,8 @@ public class GenerateFile {
 							 (faisable, il me semble, en utilisant PrintWriter à la place de FileWriter). */
 							int occ = nbrOccurence(entry.getValue(), strong.strongNumber, morphValue);
 							String nameFile = createNameFile(cat, strong, occ);
+							if(occ == 0) System.out.println(nameFile);
+							if (first == false && verseAlreadyAdded(nameFile, temp.ref.textFormat)) continue;
 							if (first) {
 								if (occ == 1) newHLFile("../../View/" + cat + "/HapaxLegomenon.md");
 								else newFile(nameFile, strong);
@@ -213,7 +231,9 @@ public class GenerateFile {
               	}
          }
          
-            int allOcc = classifyProcess.uniqueThematicWords.size();
+         // Partie concernant les hapax legomenon.
+         	String nameToutFileHL = "";
+            int allOcc = classifyProcess.uniqueThematicWords.size(); //
             if (allOcc > 0) {
                	String nameToutFile = createNameHLFile("6. Tout", allOcc);
 				newHLFile(nameToutFile);
@@ -221,51 +241,27 @@ public class GenerateFile {
 
             for (HashMap.Entry<GreekStrong, Verse> entry : classifyProcess.uniqueThematicWords.entrySet()) {
             	GreekStrong strong = entry.getKey();
-				int s = 4;
-				boolean[] isFirst = new boolean[s + 1];
-				Arrays.fill(isFirst, Boolean.TRUE);
 
                 	int i = 0;
 					for (Float strongNmbr : entry.getValue().strongNumbers) {
-						if (Math.abs(strong.strongNumber - strongNmbr) < 0.001) {
-							                	
-							boolean first = false;
+					
+						if (Math.abs(strong.strongNumber - strongNmbr) < 0.001) {	                	
 							String cat = "";
 							char morphValue = entry.getValue().morph.get(i).charAt(0);
 							switch(morphValue) {
 								case 'V':
-									if (isFirst[0]) {
-										first = true;
-										isFirst[0] = false;
-									}
 									cat = "1. Verbes";
 									break;
 								case 'N':
-									if (isFirst[1]) {
-										first = true;
-										isFirst[1] = false;
-									}
 									cat = "2. Noms";
 									break;
 								case 'A':
-									if (isFirst[2]) {
-										first = true;
-										isFirst[2] = false;
-									}
 									cat = "4. Adjectifs";
 									break;
 								case 'D':
-									if (isFirst[3]) {
-										first = true;
-										isFirst[3] = false;
-									}
 									cat = "3. Adverbes";
 									break;
 								default:
-									if (isFirst[4]) {
-										first = true;
-										isFirst[4] = false;
-									}
 									cat = "5. Autres (pour débogage)";
 									break;
 									// If we modify the number of SemanticRoles accepted, 
@@ -281,12 +277,14 @@ public class GenerateFile {
 								writerHL.append(line);
 								writerHL.close();
 								// Pour le "Tout".
-								FileWriter ToutWriterHL = new FileWriter(createNameHLFile("6. Tout", allOcc), true);
+								FileWriter ToutWriterHL = new FileWriter(nameToutFileHL, true);
 								ToutWriterHL.append(line);
 								ToutWriterHL.close();
 							}
 							catch (IOException t) {}
+							break;
 						}
+						
 						i++;
 					}
 					
