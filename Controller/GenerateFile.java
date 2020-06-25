@@ -37,8 +37,14 @@ public class GenerateFile {
     
     String createNameFile(String cat, GreekStrong strong, int occ) {
     	String file = "../../View/" + cat + "/(" + String.format("%02d", occ) + ") " + strong.unicode + " (n°";
-		file += (strong.strongNumber == (int) strong.strongNumber)
-				? (int) strong.strongNumber : strong.strongNumber;
+    	// Je ne comprends pas pourquoi la version ternaire ne fonctionne pas.
+		if (strong.strongNumber == (int)(strong.strongNumber)) {
+			file += (int) strong.strongNumber;
+		}
+		else {
+			file += strong.strongNumber;
+		}
+		file += strong.strongNumber == (int)(strong.strongNumber) ? (int) strong.strongNumber : strong.strongNumber;
 		return file + ").md";
     }
     
@@ -63,6 +69,9 @@ public class GenerateFile {
     
     // voir si le problème de synchronisation ne vient pas de ce fichier.
     // le problème de sychronisation vient ne pas seulement de ce fichier, s'il vient aussi de ce fichier.
+    
+    // les références d'objet que l'on envoie en paramètre : toujours les copier en local même quand on ne les modifie pas ?
+    // (pour éviter qu'un processsus asynchrone ne modifie l'objet en cours de route ?).
     
     void generateFiles(HashMap<Reference, Verse> passagesTranslated) throws FileNotFoundException, UnsupportedEncodingException, IOException{
         
