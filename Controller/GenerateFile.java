@@ -140,9 +140,9 @@ public class GenerateFile {
 									// If we modify the number of SemanticRoles accepted, 
 									// then we should add associated case to the present switch.
 							}
-							nameFile = createNameFile(cat, strong, allOcc);
+							int occ = nbrOccurence(entry.getValue(), strong.strongNumber, morphValue);
+							nameFile = createNameFile(cat, strong, occ);
 							if (first) {
-							    int occ = nbrOccurence(entry.getValue(), strong.strongNumber, morphValue);
 								newFile(nameFile, strong);
 								for(int k = 0; k < writersTitle.length; k++) {
 									if (k == index) {
