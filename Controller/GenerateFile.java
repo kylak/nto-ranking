@@ -344,7 +344,7 @@ public class GenerateFile {
 					// ordre
 					Arrays.sort(files, Collections.reverseOrder());
 					for(int p = 1; p < files.length; p++) {
-						File f7 = new File(path + "/" + p + ". " + files[p].getName());
+						File f7 = new File(path + "/" + String.format("%02d", p) + ". " + files[p].getName());
 						files[p].renameTo(f7);
 					}
 					f1.renameTo(f4);
