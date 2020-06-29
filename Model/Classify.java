@@ -19,24 +19,14 @@ public class Classify {
     HashMap<GreekStrong, ArrayList<Verse>> interestingClassifiedVerses = new HashMap<GreekStrong, ArrayList<Verse>>();
     HashMap<GreekStrong, Verse> uniqueThematicWords = new HashMap<GreekStrong, Verse>(); // Si le strong est présent plusieurs fois dans le verset, ce strong n'est pas compté comme hapax. Si on veut qu'un tel mot soit compté comme hapax voir le commentaire ci-dessous pour changer la condition relative à la fonctionnalité.
     
-    public Classify (HashMap<Reference, Verse[]> givenPassages) {
+    public Classify (HashMap<Reference, Verse[]> givenPassages, SyntacticRoles[] role) {
         passages = givenPassages;
+        filter = new Filter(role);
         applyFilter();
         classify();
-    }
-     
-    void setFilter() {
-        filter = new Filter();
-        List<SyntacticRoles> morph = Arrays.asList(
-            SyntacticRoles.N, 
-            SyntacticRoles.V, 
-            SyntacticRoles.A, 
-            SyntacticRoles.D);
-        filter.roleToKeep.addAll(morph);
-    }        
+    }   
     
     void applyFilter() {
-        setFilter();
         for (Reference i : passages.keySet()) {
             Verse[] versesSet = new Verse[2];
             versesSet[0] = passages.get(i)[0];  // On considère que le texte des versets à déjà été ajouté.

@@ -24,6 +24,11 @@ public class Start {
         }
         */
         final String greekText = "KJTR";
+        final SyntacticRoles[] roleToKeep = new SyntacticRoles[4];
+        roleToKeep[0] = SyntacticRoles.N; // Nouns
+        roleToKeep[1] = SyntacticRoles.A; // Adjectives
+        roleToKeep[2] = SyntacticRoles.V; // Verbs
+        roleToKeep[3] = SyntacticRoles.D; // Adverbs
         
         // Obtaining        
         ExecutorService threadpool0 = Executors.newCachedThreadPool();
@@ -44,7 +49,7 @@ public class Start {
         // Classifiying
         ExecutorService threadpool = Executors.newCachedThreadPool();
 		long start = System.currentTimeMillis();
-		Future<Classify> futureTask = threadpool.submit(() -> new Classify(findings.passages));
+		Future<Classify> futureTask = threadpool.submit(() -> new Classify(findings.passages, roleToKeep));
 		while (!futureTask0.isDone()) {/* wait task1 to be completed */}
 		long time = System.currentTimeMillis() - start;
 		System.out.println("Data classified in approximatively " + time + "ms.");
