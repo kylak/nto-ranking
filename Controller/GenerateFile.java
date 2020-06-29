@@ -34,14 +34,11 @@ public class GenerateFile {
         		i = 0;
         	}
         	synchronized(process1) {
-        	System.out.println("Entered");
         		Object process11 = new Object();
 				for (Float strongNmbr : temp.strongNumbers) {
 					synchronized(process11) {
-						System.out.println("strong: " + strongNmbr + "\ni: " + i);
 						if (Math.abs(strongNumber - strongNmbr) < 0.001
 						&& temp.morph.get(i).charAt(0) == cat) {
-							System.out.println("occ + 1");
 							occurence ++;
 						}
 					}
@@ -275,7 +272,7 @@ public class GenerateFile {
 								}
 							}
 							synchronized(subprocess11) {
-								nameToutFile = createNameFile("6. Tout", strong, allOcc);
+								nameToutFile = createNameFile("5. Tout", strong, allOcc);
 							}
 							synchronized(subprocess11) {
 								newFile(nameToutFile, strong);
@@ -326,8 +323,8 @@ public class GenerateFile {
 												if (Math.abs(strong.strongNumber - strongNmbr) < 0.001) { // strong nécéssite subprocess 1	
 													synchronized(subprocess112) {				
 														first = false;
-														morphValue = temp.morph.get(i).charAt(0);
-														System.out.println("-----\nstrong: " + strongNmbr + "\ni: " + i + "\nunicode: " + strong.unicode);
+															morphValue = temp.morph.get(i).charAt(0);
+														//System.out.println("-----\nstrong: " + strongNmbr + "\ni: " + i + "\nunicode: " + strong.unicode);
 													}
 													synchronized(subprocess112) {
 														final Object subprocess1121 = new Object();
@@ -362,13 +359,8 @@ public class GenerateFile {
 																	cat = "3. Adverbes";
 																	break;
 																default:
-																	System.out.println("Le filtre a accepté cette morph : " + morphValue + "!?");
-																	if (isFirst[4]) {
-																		first = true;
-																		isFirst[4] = false;
-																	}
-																	cat = "5. Autres (pour débogage)";
-																	break;
+																	i++;
+																	continue;
 																	// If we modify the number of SemanticRoles accepted, 
 																	// then we should add associated case to the present switch.
 															}
@@ -379,7 +371,7 @@ public class GenerateFile {
 															occ = nbrOccurence(entry.getValue(), strong.strongNumber, morphValue); // strong nécéssite subprocess 
 														}
 														synchronized(subprocess1121) {
-															System.out.println("Morph:" + morphValue + " - occ: " + occ + "cat: " + cat);
+															//System.out.println("Morph:" + morphValue + " - occ: " + occ + "cat: " + cat);
 															nameFile = createNameFile(cat, strong, occ); // strong nécéssite subprocess 1
 														}
 														synchronized(subprocess1121) {
@@ -466,7 +458,7 @@ public class GenerateFile {
 						final Object subprocess11 = new Object();
 						if (allOcc > 0) {
 							synchronized(subprocess11) {
-								nameToutFileHL = createNameHLFile("6. Tout", allOcc);
+								nameToutFileHL = createNameHLFile("5. Tout", allOcc);
 							}
 							synchronized(subprocess11) {
 								newHLFile(nameToutFileHL);
@@ -505,8 +497,8 @@ public class GenerateFile {
 														cat = "3. Adverbes";
 														break;
 													default:
-														cat = "5. Autres (pour débogage)";
-														break;
+														i++;
+														continue;
 														// If we modify the number of SemanticRoles accepted, 
 														// then we should add associated case to the present switch.
 												}
@@ -566,7 +558,7 @@ public class GenerateFile {
 		// on renomme des dossiers, des fichiers.
 		synchronized(process) {
 			final Object key = new Object();
-			String morphs[] = {"1. Verbes", "2. Noms", "4. Adjectifs", "3. Adverbes", "5. Autres (pour débogage)", "6. Tout"};
+			String morphs[] = {"1. Verbes", "2. Noms", "4. Adjectifs", "3. Adverbes", "5. Tout"};
 			
 			// Peut-être qu'on peut être plus précis sur quel bloc est à synchroniser.
 			for (String morph : morphs) { 
@@ -582,7 +574,7 @@ public class GenerateFile {
 					rendent l'execution du code environ 2s plus long.
 				*/
 				synchronized(key) {
-					if (!morph.equals("6. Tout")) {
+					if (!morph.equals("5. Tout")) {
 						// compter le nombre d'hapax.
 						final Object subprocess = new Object();
 						// Synchronization to avoid null pointer exception.

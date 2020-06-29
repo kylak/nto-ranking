@@ -51,12 +51,17 @@ public class Start {
 		Classify cVerses = null;
 		try {
 			cVerses = futureTask.get();
-			for(HashMap.Entry<GreekStrong, ArrayList<Verse>> entry : cVerses.interestingClassifiedVerses.entrySet()) {
+			/*for(HashMap.Entry<GreekStrong, ArrayList<Verse>> entry : cVerses.interestingClassifiedVerses.entrySet()) {
 				System.out.println(entry.getKey().strongNumber);
 				for (Verse temp : entry.getValue()) {
-                    System.out.println(temp.ref.textFormat);
+					int i = 0;
+                    for (Float strongNmbr : temp.strongNumbers) {
+                    	System.out.println(temp.ref + ": " + temp.text);
+                    	System.out.println("Morph: " + temp.morph.get(i).charAt(0));
+                    	i++;
+                    }
                 }
-			}
+			}*/
 		}
 		catch (InterruptedException | ExecutionException e) {}
 		final Classify classifiedVerses = cVerses;
