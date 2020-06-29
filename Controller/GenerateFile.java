@@ -647,7 +647,7 @@ public class GenerateFile {
 								for(int p = 1; p < files.length; p++) {
 									synchronized(subprocess3) {
 										// ajouter des synchronisations.
-										f7 = new File(path + "/" + String.format("%02d", p) + ". " + files[p].getName());
+										f7 = new File(path + "/" + String.format("%03d", p) + ". " + files[p].getName());
 									}
 									synchronized(subprocess3) {
 										files[p].renameTo(f7);
