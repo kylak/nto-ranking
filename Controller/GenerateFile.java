@@ -1,20 +1,16 @@
-import java.io.File;         // Import the File class
-import java.io.IOException;  // Import the IOException class to handle errors
-import java.util.HashMap;
-import java.util.List; 
-import java.util.ArrayList;
-import java.io.PrintWriter;
 import java.io.FileNotFoundException;
-import java.io.UnsupportedEncodingException;
-import java.text.Normalizer;
-import java.util.Arrays;
-import java.io.FileWriter;
-import java.util.Scanner;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.util.Collections;
-import java.io.FileFilter;
+import java.io.IOException;
+import java.io.File;
+import java.util.HashMap;		// HashMap<Reference, Verse> passagesTranslated
+import java.util.Arrays;		// Arrays.fill(isFirst, Boolean.TRUE);
+import java.util.ArrayList;		// ArrayList<Verse> verses
+import java.text.Normalizer;	// Normalizer.normalize(tmp, Normalizer.Form.NFD)
+import java.util.Collections;	// Arrays.sort(files, Collections.reverseOrder());
+import java.io.BufferedReader;	// reader = new BufferedReader(new FileReader(path));
+import java.io.FileFilter;		// files = root.listFiles(new FileFilter()
+import java.io.FileReader;		// reader = new BufferedReader(new FileReader(path));
+import java.util.Scanner;		// scanner = new Scanner(file);
+import java.io.FileWriter;		// writer = new FileWriter(nameFile);
 
 public class GenerateFile {
   
@@ -214,7 +210,7 @@ public class GenerateFile {
     
     
     // essayer de bien repositionner les déclarations d'objets pour que le programme est bien le temps de les créer synchroniser sur un objet envoyé en paramètre pour la création de l'objet generateFile ?    
-    void generateFiles(HashMap<Reference, Verse> passagesTranslated) throws FileNotFoundException, UnsupportedEncodingException, IOException{
+    void generateFiles(HashMap<Reference, Verse> passagesTranslated) throws FileNotFoundException, IOException{
     	
         Object process = new Object();
 		synchronized(process) {
@@ -552,7 +548,7 @@ public class GenerateFile {
 				}
 			}
 			
-			catch (FileNotFoundException | UnsupportedEncodingException tt) {}
+			catch (FileNotFoundException tt) {}		//  il y avait aussi avant UnsupportedEncodingException
 		}
 		
 		// on renomme des dossiers, des fichiers.
