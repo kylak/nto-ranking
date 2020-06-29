@@ -631,6 +631,7 @@ public class GenerateFile {
 								});
 							}
 							int nbrF = 0;
+							int digitNumber;
 							synchronized(subprocess2) {
 								nbrF = files.length - 1;  // -1 due to the hapax legomenon file.
 							}
@@ -640,6 +641,7 @@ public class GenerateFile {
 								f4 = new File(path + " (" + nbrF + ")");
 								// ordre (notamment pour l'affichage sur Github).
 								Arrays.sort(files, Collections.reverseOrder());
+								digitNumber = String.valueOf(nbrF).length();
 							}
 							synchronized(subprocess2) {
 								final Object subprocess3 = new Object();
@@ -647,7 +649,7 @@ public class GenerateFile {
 								for(int p = 1; p < files.length; p++) {
 									synchronized(subprocess3) {
 										// ajouter des synchronisations.
-										f7 = new File(path + "/" + String.format("%03d", p) + ". " + files[p].getName());
+										f7 = new File(path + "/" + String.format("%0" + digitNumber + "d", p) + ". " + files[p].getName());
 									}
 									synchronized(subprocess3) {
 										files[p].renameTo(f7);
