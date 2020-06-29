@@ -1,5 +1,5 @@
 |Greek word (with Strong number)|KJV translation|New Testament reference|
-|:---:|:---:|:---:|
+|:---:|-----|:---:|
 καταδυναστεύω (n°2616)|oppress|Jc 2:5-7|
 εὐχαριστέω (n°2168)|(give) thank(-ful, -s)|1 Thess 5:18|
 συναναμίγνυμι (n°4874)|(have, keep) company (with)|2 Thess 3:14|
