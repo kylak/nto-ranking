@@ -34,11 +34,14 @@ public class GenerateFile {
         		i = 0;
         	}
         	synchronized(process1) {
+        	System.out.println("Entered");
         		Object process11 = new Object();
 				for (Float strongNmbr : temp.strongNumbers) {
 					synchronized(process11) {
+						System.out.println("strong: " + strongNmbr + "\ni: " + i);
 						if (Math.abs(strongNumber - strongNmbr) < 0.001
 						&& temp.morph.get(i).charAt(0) == cat) {
+							System.out.println("occ + 1");
 							occurence ++;
 						}
 					}
@@ -324,6 +327,7 @@ public class GenerateFile {
 													synchronized(subprocess112) {				
 														first = false;
 														morphValue = temp.morph.get(i).charAt(0);
+														System.out.println("-----\nstrong: " + strongNmbr + "\ni: " + i + "\nunicode: " + strong.unicode);
 													}
 													synchronized(subprocess112) {
 														final Object subprocess1121 = new Object();
@@ -358,6 +362,7 @@ public class GenerateFile {
 																	cat = "3. Adverbes";
 																	break;
 																default:
+																	System.out.println("Le filtre a accepté cette morph : " + morphValue + "!?");
 																	if (isFirst[4]) {
 																		first = true;
 																		isFirst[4] = false;
@@ -371,14 +376,18 @@ public class GenerateFile {
 														synchronized(subprocess1121) {
 															/* Partie je trouve à alléger
 															 (faisable, il me semble, en utilisant PrintWriter à la place de FileWriter). */
-															occ = nbrOccurence(entry.getValue(), strong.strongNumber, morphValue); // strong nécéssite subprocess 1
+															occ = nbrOccurence(entry.getValue(), strong.strongNumber, morphValue); // strong nécéssite subprocess 
 														}
 														synchronized(subprocess1121) {
+															System.out.println("Morph:" + morphValue + " - occ: " + occ + "cat: " + cat);
 															nameFile = createNameFile(cat, strong, occ); // strong nécéssite subprocess 1
 														}
 														synchronized(subprocess1121) {
 															// System.out.println("i: " + i.get() + " -> " + nameFile);
-															if (/*first == false && */verseAlreadyAdded(nameFile, temp.ref.textFormat)) continue;
+															if (/*first == false && */verseAlreadyAdded(nameFile, temp.ref.textFormat)) {
+																i++;
+																continue;
+															}
 															if (first) {
 																if (occ == 1) newHLFile("../../View/" + cat + "/HapaxLegomenon.md");
 																else newFile(nameFile, strong); // strong nécéssite subprocess 1
