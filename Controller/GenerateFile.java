@@ -197,7 +197,7 @@ public class GenerateFile {
 			reader.close();
 		}
 		synchronized(process1) {
-			=return lines;
+			return lines;
 		} 
     } 
     
@@ -226,8 +226,8 @@ public class GenerateFile {
 				synchronized(process1) {
 	
 					GreekStrong strong;
-					int allOcc;
-					String nameToutFile;
+					int allOcc = 0;
+					String nameToutFile = "";
 					boolean[] isFirst;
 					
 					// IMPLEMENTER (AVEC LA SYNCHRONICITE) TOUTES LES CLES EN GLOBAL (ET EN FINAL?). (avec un tableau "processus", genre processus[i])
@@ -299,7 +299,7 @@ public class GenerateFile {
 								
 							final Object subprocess11 = new Object(); // implémenter en synchronisé ?
 							final Object subprocessY = new Object();
-							boolean first; String cat, translation, nameFile, line; char morphValue; int occ;
+							boolean first = false; String cat = "", translation = "", nameFile = "", line = ""; char morphValue; int occ = 0;
 							FileWriter writer, ToutWriter, writerHL;
 							for (Verse temp : entry.getValue()) {
 								
@@ -323,8 +323,6 @@ public class GenerateFile {
 												if (Math.abs(strong.strongNumber - strongNmbr) < 0.001) { // strong nécéssite subprocess 1	
 													synchronized(subprocess112) {				
 														first = false;
-														cat = "";
-														translation = "";
 														morphValue = temp.morph.get(i).charAt(0);
 													}
 													synchronized(subprocess112) {
