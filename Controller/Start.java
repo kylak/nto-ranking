@@ -25,10 +25,10 @@ public class Start {
         */
         final String greekText = "KJTR";
         final SyntacticRoles[] roleToKeep = new SyntacticRoles[4];
-        roleToKeep[0] = SyntacticRoles.N; // Nouns
-        roleToKeep[1] = SyntacticRoles.A; // Adjectives
-        roleToKeep[2] = SyntacticRoles.V; // Verbs
-        roleToKeep[3] = SyntacticRoles.D; // Adverbs
+        roleToKeep[0] = new SyntacticRoles(SyntacticRoles.sign.N); // Nouns
+        roleToKeep[1] = new SyntacticRoles(SyntacticRoles.sign.A); // Adjectives
+        roleToKeep[2] = new SyntacticRoles(SyntacticRoles.sign.V); // Verbs
+        roleToKeep[3] = new SyntacticRoles(SyntacticRoles.sign.D); // Adverbs
         
         // Obtaining        
         ExecutorService threadpool0 = Executors.newCachedThreadPool();
