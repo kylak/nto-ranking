@@ -11,15 +11,55 @@ import java.io.FileFilter;		// files = root.listFiles(new FileFilter()
 import java.io.FileReader;		// reader = new BufferedReader(new FileReader(path));
 import java.util.Scanner;		// scanner = new Scanner(file);
 import java.io.FileWriter;		// writer = new FileWriter(nameFile);
+import java.io.FilenameFilter;
 
 public class GenerateFile {
   
     Classify classifyProcess;
     String greekText;
+    SyntacticRoles[] roleToKeep;
+    String urlBase = "/Users/gustavberloty/Documents/GitHub/nto-ranking/";
 	
-    public GenerateFile (Classify givenClassifyProcess, String givenGreekText) {
+    public GenerateFile (Classify givenClassifyProcess, String givenGreekText, SyntacticRoles[] roles) {
         classifyProcess = givenClassifyProcess;
         greekText = givenGreekText;
+        roleToKeep = roles;
+        manageFolders();
+    }
+    
+    // synchroniser cette fonction.
+    void manageFolders() {
+		try {
+			File myObj = new File("../../Controller/.managingFolders");
+			myObj.createNewFile();
+
+			FileWriter myWriter = new FileWriter("../../Controller/.managingFolders");
+		
+			String url = urlBase + "View/";
+			File file = new File(url);
+				  
+			String[] directories = file.list(new FilenameFilter() {
+				@Override
+				public boolean accept(File current, String name) {
+					return new File(current, name).isDirectory();
+				}
+			});
+			
+			if (directories.length > 0) {
+				String aCommand = "cd " + url;
+				myWriter.write("\n" + aCommand);
+				
+				aCommand = "\nzip -rm \"../Model/Data/Previous View/" + "`date +%d:%m:%Y` à";
+				aCommand += " `date +%H`h`date +%M`min`date +%Ss` (date de la compression).zip";
+				aCommand +=  "\" " + "*/" + "\n";
+				
+				myWriter.write(aCommand);
+			}
+			myWriter.close();
+		} catch (IOException e) {
+			  System.out.println("An error occurred when we tried to write the file.");
+			  e.printStackTrace();
+		}
     }
     
     int nbrOccurence(ArrayList<Verse> verses, float strongNumber, char cat) {
@@ -79,6 +119,8 @@ public class GenerateFile {
 			FileWriter writer;
 			String tmp, header = "";
 			synchronized(process1) {
+				File fl = new File(nameFile);
+				fl.getParentFile().mkdirs();
 				writer = new FileWriter(nameFile);
 				tmp = strong.unicode;
 			}		
@@ -268,7 +310,7 @@ public class GenerateFile {
 								}
 							}
 							synchronized(subprocess11) {
-								nameToutFile = createNameFile("5. Tout", strong, allOcc);
+								nameToutFile = createNameFile((roleToKeep.length + 1) + ". Tout", strong, allOcc);
 							}
 							synchronized(subprocess11) {
 								newFile(nameToutFile, strong);
@@ -317,7 +359,7 @@ public class GenerateFile {
 										for (Float strongNmbr : temp.strongNumbers) {
 											synchronized(subprocess111) {
 												if (Math.abs(strong.strongNumber - strongNmbr) < 0.001) { // strong nécéssite subprocess 1	
-													synchronized(subprocess112) {				
+													synchronized(subprocess112) {
 														first = false;
 															morphValue = temp.morph.get(i).charAt(0);
 														//System.out.println("-----\nstrong: " + strongNmbr + "\ni: " + i + "\nunicode: " + strong.unicode);
@@ -325,40 +367,26 @@ public class GenerateFile {
 													synchronized(subprocess112) {
 														final Object subprocess1121 = new Object();
 														synchronized(subprocess1121) {
-															switch(morphValue) {
-																case 'V': // index = 0
-																	if (isFirst[0]) { // nécéssite subprocess 2 done.
-																		first = true;
-																		isFirst[0] = false;
+															boolean isFound = false;
+															final Object subprocess11211 = new Object();
+															synchronized(subprocess11211) {
+																for(int t = 0; t < roleToKeep.length; t++) {
+																	if(morphValue == roleToKeep[t].abbr.name().charAt(0)) {
+																		if(isFirst[t]) {
+																			first = true;
+																			isFirst[t] = false;
+																		}
+																		cat = (t + 1) + ". " + roleToKeep[t].name + "s";
+																		isFound = true;
+																		break;
 																	}
-																	cat = "1. Verbes";
-																	break;
-																case 'N': // index = 1
-																	if (isFirst[1]) {
-																		first = true;
-																		isFirst[1] = false;
-																	}
-																	cat = "2. Noms";
-																	break;
-																case 'A': // index = 2
-																	if (isFirst[2]) {
-																		first = true;
-																		isFirst[2] = false;
-																	}
-																	cat = "4. Adjectifs";
-																	break;
-																case 'D': // index = 3
-																	if (isFirst[3]) {
-																		first = true;
-																		isFirst[3] = false;
-																	}
-																	cat = "3. Adverbes";
-																	break;
-																default:
+																}
+															}
+															synchronized(subprocess11211) {
+																if(!isFound) {
 																	i++;
 																	continue;
-																	// If we modify the number of SemanticRoles accepted, 
-																	// then we should add associated case to the present switch.
+																}
 															}
 														}
 														synchronized(subprocess1121) {
@@ -440,7 +468,7 @@ public class GenerateFile {
 				// Partie concernant les hapax legomenon.
 				synchronized(process1) {
 				
-					String nameToutFileHL, cat, line, line2 = "";
+					String nameToutFileHL, cat = "", line, line2 = "";
 					char morphValue; int allOcc, i;
 					File tmp; FileWriter writerHL;
 					FileWriter ToutWriterHL; GreekStrong strong;
@@ -454,7 +482,7 @@ public class GenerateFile {
 						final Object subprocess11 = new Object();
 						if (allOcc > 0) {
 							synchronized(subprocess11) {
-								nameToutFileHL = createNameHLFile("5. Tout", allOcc);
+								nameToutFileHL = createNameHLFile((roleToKeep.length + 1) + ". Tout", allOcc);
 							}
 							synchronized(subprocess11) {
 								newHLFile(nameToutFileHL);
@@ -479,24 +507,22 @@ public class GenerateFile {
 												morphValue = entry.getValue().morph.get(i).charAt(0);
 											}
 											synchronized(subprocess1111) {
-												switch(morphValue) {
-													case 'V':
-														cat = "1. Verbes";
-														break;
-													case 'N':
-														cat = "2. Noms";
-														break;
-													case 'A':
-														cat = "4. Adjectifs";
-														break;
-													case 'D':
-														cat = "3. Adverbes";
-														break;
-													default:
+												boolean isFound = false;
+												final Object subprocess11111 = new Object();
+												synchronized(subprocess11111) {
+													for(int t = 0; t < roleToKeep.length; t++) {
+														if(morphValue == roleToKeep[t].abbr.name().charAt(0)) {
+															cat = (t + 1) + ". " + roleToKeep[t].name + "s";
+															isFound = true;
+															break;
+														}
+													}
+												}
+												synchronized(subprocess11111) {
+													if(!isFound) {
 														i++;
 														continue;
-														// If we modify the number of SemanticRoles accepted, 
-														// then we should add associated case to the present switch.
+													}
 												}
 											}
 											synchronized(subprocess1111) {
@@ -554,114 +580,127 @@ public class GenerateFile {
 		// on renomme des dossiers, des fichiers.
 		synchronized(process) {
 			final Object key = new Object();
-			String morphs[] = {"1. Verbes", "2. Noms", "4. Adjectifs", "3. Adverbes", "5. Tout"};
+			final Object key2 = new Object();
+			String morphs[] = new String[roleToKeep.length + 1];
 			
-			// Peut-être qu'on peut être plus précis sur quel bloc est à synchroniser.
-			for (String morph : morphs) { 
-				/* 
-					Je synchronise ici, car on
-					ne sait jamais : peut-être que la variable path 
-					pourrait être supprimée (par la fin de la boucle for)
-					avant que f2 ne soit crée n'est-ce pas? 
-					Pareil pour la variable morph qui est modifiée à chaque
-					tour de boucle.
-					
-					Toutes ces synchronisations dans ce bloc,
-					rendent l'execution du code environ 2s plus long.
-				*/
-				synchronized(key) {
-					if (!morph.equals("5. Tout")) {
-						// compter le nombre d'hapax.
+			synchronized(key2) {
+				for (int i = 0 ; i < morphs.length; i++) {
+					if (i == roleToKeep.length) 
+						morphs[i] = (i + 1) + ". Tout";
+					else
+						morphs[i] = (i + 1) + ". " + roleToKeep[i].name + "s";
+				}
+			}
+			
+			synchronized(key2) {
+				// Peut-être qu'on peut être plus précis sur quel bloc est à synchroniser.
+				for (String morph : morphs) { 
+					/* 
+						Je synchronise ici, car on
+						ne sait jamais : peut-être que la variable path 
+						pourrait être supprimée (par la fin de la boucle for)
+						avant que f2 ne soit crée n'est-ce pas? 
+						Pareil pour la variable morph qui est modifiée à chaque
+						tour de boucle.
+						
+						Toutes ces synchronisations dans ce bloc,
+						rendent l'execution du code environ 2s plus long.
+					*/
+					synchronized(key) {
+						if (!morph.equals((roleToKeep.length + 1) + ". Tout")) {
+							// compter le nombre d'hapax.
+							final Object subprocess = new Object();
+							// Synchronization to avoid null pointer exception.
+							String path = null;
+							synchronized(subprocess) {
+								path = "../../View/" + morph + "/HapaxLegomenon.md";
+							}
+							File f1 = null;
+							synchronized(subprocess) {
+								f1 = new File(path);
+							}
+							// Est-ce qu'il y a un thread qui renomme les hapax ?
+							synchronized(subprocess) {
+								if(f1.exists()) {
+									// createNameFile()
+									// lineNumber ouvre le fichier à l'adresse path.
+									final Object subprocess2 = new Object();
+									File f2 = null;
+									synchronized(subprocess2) {
+										// ajouter des synchronisations.
+										f2 = new File(createNameHLFile(morph, lineNumber(path) - 2));
+									}
+									synchronized(subprocess2) {
+										f1.renameTo(f2);
+									}
+								}
+							}
+						}
+					}	
+					// Est-ce que si on ne renomme pas les variables ci-dessous ce n'est pas suffisant ?
+					synchronized(key) {
+						// renommer les dossiers et "ordonner" les fichiers.
 						final Object subprocess = new Object();
-						// Synchronization to avoid null pointer exception.
 						String path = null;
 						synchronized(subprocess) {
-							path = "../../View/" + morph + "/HapaxLegomenon.md";
+							path = "../../View/" + morph;
 						}
 						File f1 = null;
 						synchronized(subprocess) {
 							f1 = new File(path);
 						}
-						// Est-ce qu'il y a un thread qui renomme les hapax ?
 						synchronized(subprocess) {
-							if(f1.exists()) {
-								// createNameFile()
-								// lineNumber ouvre le fichier à l'adresse path.
+							if(f1.isDirectory()) {
+								
+								// tout fichier caché n'est pas pris en compte.
 								final Object subprocess2 = new Object();
-								File f2 = null;
+								File root = null;
 								synchronized(subprocess2) {
-									// ajouter des synchronisations.
-									f2 = new File(createNameHLFile(morph, lineNumber(path) - 2));
+									root = new File(path + "/");
+								}
+								File[] files = null;
+								synchronized(subprocess2) {
+									files = root.listFiles(new FileFilter() {
+										@Override
+										public boolean accept(File file) {
+											return !file.isHidden();
+										}
+									});
+								}
+								int nbrF = 0;
+								int digitNumber;
+								synchronized(subprocess2) {
+									nbrF = files.length - 1;  // -1 due to the hapax legomenon file.
+								}
+								// renommage
+								File f4 = null;
+								synchronized(subprocess2) {
+									f4 = new File(path + " (" + nbrF + ")");
+									// ordre (notamment pour l'affichage sur Github).
+									Arrays.sort(files, Collections.reverseOrder());
+									digitNumber = String.valueOf(nbrF).length();
 								}
 								synchronized(subprocess2) {
-									f1.renameTo(f2);
-								}
-							}
-						}
-					}
-				}	
-				// Est-ce que si on ne renomme pas les variables ci-dessous ce n'est pas suffisant ?
-				synchronized(key) {
-					// renommer les dossiers et "ordonner" les fichiers.
-					final Object subprocess = new Object();
-					String path = null;
-					synchronized(subprocess) {
-						path = "../../View/" + morph;
-					}
-					File f1 = null;
-					synchronized(subprocess) {
-						f1 = new File(path);
-					}
-					synchronized(subprocess) {
-						if(f1.isDirectory()) {
-							
-							// tout fichier caché n'est pas pris en compte.
-							final Object subprocess2 = new Object();
-							File root = null;
-							synchronized(subprocess2) {
-								root = new File(path + "/");
-							}
-							File[] files = null;
-							synchronized(subprocess2) {
-								files = root.listFiles(new FileFilter() {
-									@Override
-									public boolean accept(File file) {
-										return !file.isHidden();
-									}
-								});
-							}
-							int nbrF = 0;
-							int digitNumber;
-							synchronized(subprocess2) {
-								nbrF = files.length - 1;  // -1 due to the hapax legomenon file.
-							}
-							// renommage
-							File f4 = null;
-							synchronized(subprocess2) {
-								f4 = new File(path + " (" + nbrF + ")");
-								// ordre (notamment pour l'affichage sur Github).
-								Arrays.sort(files, Collections.reverseOrder());
-								digitNumber = String.valueOf(nbrF).length();
-							}
-							synchronized(subprocess2) {
-								final Object subprocess3 = new Object();
-								File f7 = null;
-								for(int p = 1; p < files.length; p++) {
-									synchronized(subprocess3) {
-										// ajouter des synchronisations.
-										f7 = new File(path + "/" + String.format("%0" + digitNumber + "d", p) + ". " + files[p].getName());
-									}
-									synchronized(subprocess3) {
-										files[p].renameTo(f7);
+									final Object subprocess3 = new Object();
+									File f7 = null;
+									for(int p = 1; p < files.length; p++) {
+										synchronized(subprocess3) {
+											// ajouter des synchronisations.
+											f7 = new File(path + "/" + String.format("%0" + digitNumber + "d", p) + ". " + files[p].getName());
+										}
+										synchronized(subprocess3) {
+											files[p].renameTo(f7);
+										}
 									}
 								}
-							}
-							synchronized(subprocess2) {
-								f1.renameTo(f4);
+								synchronized(subprocess2) {
+									f1.renameTo(f4);
+								}
 							}
 						}
 					}
 				}
+			
 			}
 		
 		}

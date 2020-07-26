@@ -75,13 +75,20 @@ public class Start {
         
         // Generating
         ExecutorService threadpool2 = Executors.newCachedThreadPool();
-		Future<GenerateFile> futureTask2 = threadpool2.submit(() -> new GenerateFile(classifiedVerses, greekText));
-		long start1 = System.currentTimeMillis();
+        final Object process1 = new Object();
+        long start1;
+        Future<GenerateFile> futureTask2;
+        synchronized(process1) {
+			futureTask2 = threadpool2.submit(() -> new GenerateFile(classifiedVerses, greekText, roleToKeep));
+			start1 = System.currentTimeMillis();
+		}
 		while (!futureTask0.isDone()) {/* wait task1 to be completed */}
 		GenerateFile gf = null;
 		try {
 			gf = futureTask2.get();
-			gf.generateFiles(findings.passagesTranslated);
+			synchronized(process1) {
+				gf.generateFiles(findings.passagesTranslated);
+			}
 		}
 		catch (InterruptedException | ExecutionException | FileNotFoundException | UnsupportedEncodingException t) {}
 		catch (IOException e) {}
