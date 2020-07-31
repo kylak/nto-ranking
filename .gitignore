@@ -2,6 +2,11 @@
 !Model/Data/New\ Testament/
 Model/Data/New\ Testament/**
 !Model/Data/New\ Testament/.keepTheFolderOnGithub
+
+!Model/Data/Previous\ View/
+Model/Data/Previous\ View/**
+!Model/Data/Previous\ View/.keepTheFolderOnGithub
+
 !Diverse/Generated\ Java\ classes/
 Diverse/Generated\ Java\ classes/**
 !Diverse/Generated\ Java\ classes/.keepTheFolderOnGithub

@@ -18,50 +18,13 @@ public class GenerateFile {
     Classify classifyProcess;
     String greekText;
     SyntacticRoles[] roleToKeep;
-    String urlBase = "/Users/gustavberloty/Documents/GitHub/nto-ranking/";
 	
     public GenerateFile (Classify givenClassifyProcess, String givenGreekText, SyntacticRoles[] roles) {
         classifyProcess = givenClassifyProcess;
         greekText = givenGreekText;
         roleToKeep = roles;
-        manageFolders();
     }
-    
-    // synchroniser cette fonction.
-    void manageFolders() {
-		try {
-			File myObj = new File("../../Controller/.managingFolders");
-			myObj.createNewFile();
-
-			FileWriter myWriter = new FileWriter("../../Controller/.managingFolders");
-		
-			String url = urlBase + "View/";
-			File file = new File(url);
-				  
-			String[] directories = file.list(new FilenameFilter() {
-				@Override
-				public boolean accept(File current, String name) {
-					return new File(current, name).isDirectory();
-				}
-			});
-			
-			if (directories.length > 0) {
-				String aCommand = "cd " + url;
-				myWriter.write("\n" + aCommand);
-				
-				aCommand = "\nzip -rm \"../Model/Data/Previous View/" + "`date +%d:%m:%Y` à";
-				aCommand += " `date +%H`h`date +%M`min`date +%Ss` (date de la compression).zip";
-				aCommand +=  "\" " + "*/" + "\n";
-				
-				myWriter.write(aCommand);
-			}
-			myWriter.close();
-		} catch (IOException e) {
-			  System.out.println("An error occurred when we tried to write the file.");
-			  e.printStackTrace();
-		}
-    }
-    
+        
     int nbrOccurence(ArrayList<Verse> verses, float strongNumber, char cat) {
     	int occurence = 0, i = 0;
     	Object process1 = new Object();
