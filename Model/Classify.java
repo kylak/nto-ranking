@@ -17,26 +17,16 @@ public class Classify {
 	HashMap<Reference, Verse[]> passages = new HashMap<Reference, Verse[]>();
     Filter filter;
     HashMap<GreekStrong, ArrayList<Verse>> interestingClassifiedVerses = new HashMap<GreekStrong, ArrayList<Verse>>();
-    HashMap<GreekStrong, Verse> uniqueThematicWords = new HashMap<GreekStrong, Verse>();
+    HashMap<GreekStrong, Verse> uniqueThematicWords = new HashMap<GreekStrong, Verse>(); // Si le strong est présent plusieurs fois dans le verset, ce strong n'est pas compté comme hapax. Si on veut qu'un tel mot soit compté comme hapax voir le commentaire ci-dessous pour changer la condition relative à la fonctionnalité.
     
-    public Classify (HashMap<Reference, Verse[]> givenPassages) {
+    public Classify (HashMap<Reference, Verse[]> givenPassages, SyntacticRoles[] role) {
         passages = givenPassages;
+        filter = new Filter(role);
         applyFilter();
         classify();
-    }
-     
-    void setFilter() {
-        filter = new Filter();
-        List<SyntacticRoles> morph = Arrays.asList(
-            SyntacticRoles.N, 
-            SyntacticRoles.V, 
-            SyntacticRoles.A, 
-            SyntacticRoles.D);
-        filter.roleToKeep.addAll(morph);
-    }        
+    }   
     
     void applyFilter() {
-        setFilter();
         for (Reference i : passages.keySet()) {
             Verse[] versesSet = new Verse[2];
             versesSet[0] = passages.get(i)[0];  // On considère que le texte des versets à déjà été ajouté.
@@ -67,6 +57,7 @@ public class Classify {
                 Float StrongToSearch = passagesForLoop.get(r)[1].strongNumbers.get(i);
                 // System.out.println("StrongToSearch: " + StrongToSearch);
                 ArrayList<Verse> versesHavingTheStrong = new ArrayList<Verse>();
+                int nbreOccurenceTotal = 0;
                 
                 // An algorithmic variable to speed up the algorithm.
                 boolean enterNowAlgo = false;
@@ -77,7 +68,7 @@ public class Classify {
                     // System.out.println("nouvelle référence de cheché: " + seeThisRef.textFormat);
                     /* We begin to go through the verses from the one at
                      the indice 'r' (from passagesForLoop.get(r)[1]) */
-                    if (enterNowAlgo || (seeThisRef.textFormat).equals(r.textFormat)) {
+                    if (enterNowAlgo || (seeThisRef.textFormat).equals(r.textFormat)) { // this condition implied that we don't look back to the reference we previously checked.
                         
                         // We go through every verse's word.
                         for (int j = 0; j < passagesForLoop.get(seeThisRef)[1].strongNumbers.size() ; j++, p++) {
@@ -101,6 +92,7 @@ public class Classify {
                                 passagesForLoop.get(seeThisRef)[1].strongNumbers.remove(j);
                                 j--;
                                 if (seeThisRef == r && i > 0) {i--;}
+                                nbreOccurenceTotal++;
                             }
                         }
                         // System.out.println("passagesForLoop.get(seeThisRef)[1].text: " + passagesForLoop.get(seeThisRef)[1].text);
@@ -108,13 +100,13 @@ public class Classify {
                         enterNowAlgo = true;
                     }
                 }
-                if (versesHavingTheStrong.size() == 1) {
+                if (nbreOccurenceTotal == 1) { // Si on ne veut pas compter le nombre de fois que le strong est dans le verset de base : versesHavingTheStrong.size() == 1.
                     uniqueThematicWords.put(new GreekStrong(StrongToSearch), versesHavingTheStrong.get(0));
                 }
                 else {
                     interestingClassifiedVerses.put(new GreekStrong(StrongToSearch), new ArrayList<Verse>(versesHavingTheStrong));
                 }
-            }
+            }	
         }
         for (HashMap.Entry<GreekStrong, ArrayList<Verse>> entry : interestingClassifiedVerses.entrySet()) {
             GreekStrong strong = entry.getKey();

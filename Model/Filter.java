@@ -61,7 +61,7 @@ public class Filter {
     
     boolean isThatRoleToBeKept(char role) {
         for (SyntacticRoles temp : roleToKeep) {
-            if (temp.name().equals(String.valueOf(role))) {
+            if (temp.abbr.name().equals(String.valueOf(role))) {
                 return true;
             }
         } 

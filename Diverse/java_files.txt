@@ -4,6 +4,7 @@
 ../Controller/RefFormat.java
 ../Controller/GreekStrong.java
 ../Controller/Verse.java
+../Controller/ManageViewFiles.java
 ../Model/UpdateData.java
 ../Model/Filter.java
 ../Model/GetMartinTranslation.java
