@@ -113,9 +113,17 @@ public class GenerateFile {
     }
     
     void newHLFile(String fileName) {
-    	try { 		
-			FileWriter writer = new FileWriter(fileName);
+    	try {
+    	
 			Object process1 = new Object();
+			FileWriter writer;
+			String tmp, header = "";
+			
+			synchronized(process1) {
+				File fl = new File(fileName);
+				fl.getParentFile().mkdirs();
+				writer = new FileWriter(fileName);
+			}
 			synchronized(process1) {
 				writer.write("|Greek word (with Strong number)|KJV translation|New Testament reference|\n|:---:|-----|:---:|\n");
 			}
