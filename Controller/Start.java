@@ -32,14 +32,16 @@ public class Start {
 			}
 			*/
 			greekText = "KJTR";
-			roleToKeep = new SyntacticRoles[4];
 		}
 		
 		synchronized(process1) {
-			roleToKeep[0] = new SyntacticRoles(SyntacticRoles.sign.N); // Nouns
-			roleToKeep[1] = new SyntacticRoles(SyntacticRoles.sign.A); // Adjectives
-			roleToKeep[2] = new SyntacticRoles(SyntacticRoles.sign.V); // Verbs
-			roleToKeep[3] = new SyntacticRoles(SyntacticRoles.sign.D); // Adverbs
+			roleToKeep = new SyntacticRoles[]
+					{
+						new SyntacticRoles(SyntacticRoles.sign.N), // Nouns
+						new SyntacticRoles(SyntacticRoles.sign.A), // Adjectives
+						new SyntacticRoles(SyntacticRoles.sign.V), // Verbs
+						new SyntacticRoles(SyntacticRoles.sign.D) // Adverbs
+					};
 		}
         
         // Obtaining
