@@ -17,7 +17,7 @@ You have an example of a such list in this GitHub repo.<br />
 
 To start the programm with the list of verses (located on ```/Model/Data/List_of_verses.csv```) : 
 ```
-cd Diverse && javac @java_files.txt -d Generated\ Java\ classes/ && cd Generated\ Java\ classes/ && java Start && cd ../..
+cd Diverse && javac @java_files.txt -d Generated\ Java\ classes/ && cd Generated\ Java\ classes/ && java ManageViewFiles && sh ../../Controller/.managingFolders && rm ../../Controller/.managingFolders && java Start && cd ../..
 ```
 
 To compile all .java files and execute a test, still from this folder :
