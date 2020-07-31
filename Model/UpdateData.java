@@ -79,11 +79,9 @@ public class UpdateData {
 			  	myWriter.write(command[i]);
 			  }
 			  
-			  if(directories.length > 0) {
-				  aCommand = "\nzip -rm \"" + directories[0] + " (zipped ";
-				  aCommand += "automatically just before the `date +%Y-%m-%d` ";
-				  aCommand +=  "folder was ready).zip\" " + directories[0] + "\n";
-			  }
+			  aCommand = "\nzip -rm \"" + directories[0] + " (zipped ";
+			  aCommand += "automatically just before the `date +%Y-%m-%d` ";
+			  aCommand +=  "folder was ready).zip\" " + directories[0] + "\n";
 			  myWriter.write(aCommand);
 			  
 			  aCommand = "mv " + newFolderName + " ";
@@ -106,7 +104,7 @@ public class UpdateData {
 		  if (myObj.createNewFile()) {
         	// System.out.println("File created: " + myObj.getName());
           } else {
-        	System.out.println(".downloadData already exists.");
+        	System.out.println("File already exists.");
           }
     	} catch (IOException e) {
       		System.out.println("An error occurred.");
