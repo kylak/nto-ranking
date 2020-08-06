@@ -20,28 +20,50 @@ public class Classify {
     HashMap<GreekStrong, Verse> uniqueThematicWords = new HashMap<GreekStrong, Verse>(); // Si le strong est présent plusieurs fois dans le verset, ce strong n'est pas compté comme hapax. Si on veut qu'un tel mot soit compté comme hapax voir le commentaire ci-dessous pour changer la condition relative à la fonctionnalité.
     
     public Classify (HashMap<Reference, Verse[]> givenPassages, SyntacticRoles[] role) {
-        passages = givenPassages;
-        filter = new Filter(role);
-        applyFilter();
-        classify();
+        final Object process1 = new Object();
+    	synchronized(process1) {
+    		passages = givenPassages;
+        	filter = new Filter(role);
+        }
+        synchronized(process1) {
+        	applyFilter();
+        }
+        synchronized(process1) {
+        	classify();
+        }
     }   
     
     void applyFilter() {
         for (Reference i : passages.keySet()) {
-            Verse[] versesSet = new Verse[2];
-            versesSet[0] = passages.get(i)[0];  // On considère que le texte des versets à déjà été ajouté.
-            String str = "";
-            for (Float s : versesSet[0].strongNumbers) {
-                str += Float.toString(s) + " ";
+			final Object process1 = new Object();
+			Verse[] versesSet = new Verse[2];
+			String str = "";
+			synchronized(process1) {
+            	versesSet[0] = passages.get(i)[0];  // On considère que le texte des versets à déjà été ajouté.
             }
-            String mrph = "";
-            for (String s : versesSet[0].morph) {
-                mrph += s + " ";
+            synchronized(process1) {
+            	final Object process2 = new Object();
+				for (Float s : versesSet[0].strongNumbers) {
+					synchronized(process2) {
+						str += Float.toString(s) + " ";
+					}
+				}
+			}
+			/*
+			synchronized(process1) {
+				String mrph = "";
+				for (String s : versesSet[0].morph) {
+					mrph += s + " ";
+				}
+			}
+            System.out.println(versesSet[0].ref.textFormat + " - " + versesSet[0].text + "\nstrong: " + str + "\nmorph: " + mrph + "\n"); */
+            synchronized(process1) {
+            	versesSet[1] = filter.applyOn(versesSet[0]);
             }
-            // System.out.println(versesSet[0].ref.textFormat + " - " + versesSet[0].text + "\nstrong: " + str + "\nmorph: " + mrph + "\n");
-            versesSet[1] = filter.applyOn(versesSet[0]);
             // System.out.println(i.textFormat + " - versesSet[1]: " + versesSet[1].text);
-            passages.replace(i, versesSet);
+            synchronized(process1) {
+            	passages.replace(i, versesSet);
+            }
         }
     }
     
