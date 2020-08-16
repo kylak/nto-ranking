@@ -23,12 +23,22 @@ public class GetPassages {
     HashMap<Reference, Verse> passagesTranslated;
     
     public GetPassages(String filename, String sourceName) {
-					getRef(urlBase + filename);
-					// System.out.println("entered");
-					for (Reference ref : passages.keySet()) {
-						passages.get(ref)[0] = getVerse(ref, -1, sourceName);
-					}
-					passagesTranslated = new HashMap<Reference, Verse>(new GetMartinTranslation(passages).passagesTranslated);
+    	final Object process1 = new Object();
+    	synchronized(process1) {
+			getRef(urlBase + filename);
+		}
+		// System.out.println("entered");
+		synchronized(process1) {
+			final Object process2 = new Object();
+			for (Reference ref : passages.keySet()) {
+				synchronized(process1) {
+					passages.get(ref)[0] = getVerse(ref, -1, sourceName);
+				}
+			}
+		}
+		synchronized(process1) {
+			passagesTranslated = new HashMap<Reference, Verse>(new GetMartinTranslation(passages).passagesTranslated);
+		}
     }
 
     void getRef(String givenFilename) {
@@ -36,57 +46,83 @@ public class GetPassages {
         String csvFile = givenFilename;
         String line = "";
         String cvsSplitBy = ",";
-
-        try (BufferedReader br = new BufferedReader(new FileReader(csvFile))) {
-
-			String verseDivision = "";
-			
-            for (int i = 0; (line = br.readLine()) != null; i++) {
-
-                // Comma used as separator.
-                String finding = line.split(cvsSplitBy)[0];
-                
-                // Get the verses division specified in the list.
-                // It should be given as "verses_division_:_X,"
-                // where X is the verse division (CNTR, NA28, …).
-                if (i == 0) {
-                	verseDivision = finding.substring(18);
-                	switch (verseDivision) {
-                		case "NA28" : case "Darby" :
-                			verseDivision = "NA28";
-                			System.out.println("The NA28 verse division is used in your list.");
-                			break;
-                		case "CNTR" : case "KJTR" : case "KJV" : case "Martin" : 
-                			 verseDivision  = "CNTR";
-                			 System.out.println("The Stephanus 1551 (CNTR) verse division is used in your list.");
-                			 break;
-                		default : 
-                			System.out.println("Error with the verse division provided in the verses references list.");
-                	}
-               	}
-               	else {
-					boolean contain = false;
-					for(Reference r : passages.keySet()) {
-						if (r.textFormat.equals(finding)) {
-							contain = true;
+        
+        final Object process1 = new Object();
+    	synchronized(process1) {
+			try (BufferedReader br = new BufferedReader(new FileReader(csvFile))) {
+	
+				String verseDivision = "";
+				final Object process2 = new Object();
+				
+				for (int i = 0; (line = br.readLine()) != null; i++) {
+					synchronized(process2) {
+						// Comma used as separator.
+						String finding = line.split(cvsSplitBy)[0];
+						
+						// Get the verses division specified in the list.
+						// It should be given as "verses_division_:_X,"
+						// where X is the verse division (CNTR, NA28, …).
+						if (i == 0) {
+							verseDivision = finding.substring(18);
+							final Object process3 = new Object();
+							synchronized(process3) {
+								switch (verseDivision) {
+									case "NA28" : case "Darby" :
+										verseDivision = "NA28";
+										System.out.println("The NA28 verse division is used in your list.");
+										break;
+									case "CNTR" : case "KJTR" : case "KJV" : case "Martin" : 
+										 verseDivision  = "CNTR";
+										 System.out.println("The Stephanus 1551 (CNTR) verse division is used in your list.");
+										 break;
+									default : 
+										System.out.println("Error with the verse division provided in the verses references list.");
+								}
+							}
+						}
+						else {
+							boolean contain = false;
+							final Object process3 = new Object();
+							synchronized(process3) {
+								final Object process4 = new Object();
+								for(Reference r : passages.keySet()) {
+									synchronized(process4) {
+										if (r.textFormat.equals(finding)) {
+											contain = true;
+										}
+									}
+								}
+							}
+							synchronized(process3) {
+								if (!contain) {
+									passages.put(new Reference(finding, verseDivision), new Verse[2]);
+								}
+							}
 						}
 					}
-					if (!contain) {
-						passages.put(new Reference(finding, verseDivision), new Verse[2]);
+				}
+	
+			} catch (IOException e) {e.printStackTrace();}
+		}
+        
+        synchronized(process1) {
+			boolean NA28andCNTR_references = true;
+			final Object process2 = new Object();
+    		synchronized(process2) {
+    			final Object process3 = new Object();
+				for (Reference r : passages.keySet()) {
+					synchronized(process3) {
+						if (!r.NA28andCNTR_reference) {
+							NA28andCNTR_references = false;
+						}
 					}
 				}
-            }
-
-        } catch (IOException e) {e.printStackTrace();}
-        
-        boolean NA28andCNTR_references = true;
-        for (Reference r : passages.keySet()) {
-        	if (!r.NA28andCNTR_reference) {
-        		NA28andCNTR_references = false;
-        	}
-        }
-        if (NA28andCNTR_references) {
-        	System.out.println("The references you gave through the list give the same passages in a \"NA28\" Bible and in a \"Textus Receptus\" Bible !");
+			}
+			synchronized(process2) {
+				if (NA28andCNTR_references) {
+					System.out.println("The references you gave through the list give the same passages in a \"NA28\" Bible and in a \"Textus Receptus\" Bible !");
+				}
+			}
         }
     }
         
