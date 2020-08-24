@@ -148,17 +148,23 @@ public class GetPassages {
     
     String getData(String dataID) {
         String dataFilename = dataID.substring(0, 5) + ".htm";
-        String dataPath = urlBase + "New Testament/";
-        dataPath += getGoodDirectory() + "/" + dataFilename;
-        try {
-            return new String(Files.readAllBytes(Paths.get(dataPath)));
+        String dataPath;
+        final Object process6 = new Object();
+        synchronized(process6) {
+        	dataPath = urlBase + "New Testament/";
         }
-        catch (IOException givenException) {
-            String error = "An error occured when we tried to read the file (";
-            error += dataPath + ").";
-            // System.out.println(error);
-            return null;
-        }
+		synchronized(process6) {
+        	dataPath += getGoodDirectory() + "/" + dataFilename;
+			try {
+				return new String(Files.readAllBytes(Paths.get(dataPath)));
+			}
+			catch (IOException givenException) {
+				/* String error = "An error occured when we tried to read the file (";
+				error += dataPath + ").";
+				System.out.println(error); */
+				return null;
+			}
+		}
     }
     
     String[] getDataIDs(Reference ref, int indice, String sourceName) {
