@@ -170,15 +170,29 @@ public class GetPassages {
     String[] getDataIDs(Reference ref, int indice, String sourceName) {
         String verseNumber;
         DecimalFormat df = new DecimalFormat("00");
+        final Object process7 = new Object();
+        synchronized(process7) {
+        	df = new DecimalFormat("00");
+        }
         indice = (indice==-1)?ref.verse[0]:indice;
-        verseNumber = ref.CNTRformatBeginning + df.format(indice);
-        
+        synchronized(process7) {
+        	verseNumber = ref.CNTRformatBeginning + df.format(indice);
+        }
         String sourceNumber = "CT" + sourceName;
         String[] dataID = new String[3];
-        dataID[0] = sourceNumber;
-        dataID[1] = verseNumber;
-        dataID[2] = sourceName;
-        return dataID;
+        final Object process8 = new Object();
+        synchronized(process8) {
+        	dataID[0] = sourceNumber;
+        }
+        synchronized(process8) {
+        	dataID[1] = verseNumber;
+        }
+        synchronized(process8) {
+        	dataID[2] = sourceName;
+        }
+        synchronized(process8) {
+        	return dataID;
+        }
     }
     
     Verse getVerse(Reference ref, int indice, String sourceName) {
