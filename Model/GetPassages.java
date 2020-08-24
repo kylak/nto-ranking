@@ -127,14 +127,23 @@ public class GetPassages {
     }
         
     String getGoodDirectory() {
-        File file = new File(urlBase + "New Testament/");
-        String[] directories = file.list(new FilenameFilter() {
-            @Override
-            public boolean accept(File current, String name) {
-            return new File(current, name).isDirectory();
-            }
-        });
-        return directories[0];
+    	File file;
+    	String[] directories;
+		final Object process5 = new Object();
+		synchronized(process5) {
+        	file = new File(urlBase + "New Testament/");
+        }
+        synchronized(process5) {
+        	directories = file.list(new FilenameFilter() {
+				@Override
+				public boolean accept(File current, String name) {
+				return new File(current, name).isDirectory();
+				}
+			});
+		}
+		synchronized(process5) {
+        	return directories[0];
+        }
     }
     
     String getData(String dataID) {
