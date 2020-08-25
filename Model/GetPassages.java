@@ -201,29 +201,63 @@ public class GetPassages {
         ArrayList<Float> strong = new ArrayList<Float>();
         ArrayList<String> morph = new ArrayList<String>();
         String source = sourceName;
+        Verse returnValue;
         
-        if (ref.textFormat.contains("-") && indice == -1) {
-            Verse[] tabVerse = new Verse[ref.verse.length];
-            for (int i = 0; i < ref.verse.length; i++) {
-                tabVerse[i] = getVerse(ref, ref.verse[i], sourceName);
-            }
-            return concatVerse(ref, tabVerse, sourceName);
+        final Object process11 = new Object();
+        synchronized(process11) {
+			if (ref.textFormat.contains("-") && indice == -1) {
+				Verse[] tabVerse;
+				final Object process9 = new Object();
+				synchronized(process9) {
+					tabVerse = new Verse[ref.verse.length];
+				}
+				for (int i = 0; i < ref.verse.length; i++) {
+					synchronized(process9) {
+						tabVerse[i] = getVerse(ref, ref.verse[i], sourceName);
+					}
+				}
+				synchronized(process9) {
+					returnValue = concatVerse(ref, tabVerse, sourceName);
+				}
+				synchronized(process9) {
+					return returnValue;
+				}
+			}
+			else {
+				String[] dataIDs;
+				String data;
+				final Object process10 = new Object();
+				synchronized(process10) {
+					dataIDs = getDataIDs(ref, indice, sourceName);
+				}
+				synchronized(process10) {
+					data = getData(dataIDs[1]);
+				}
+				/* for(String d : dataIDs) {
+					System.out.println(d);
+				} */
+				ArrayList<ArrayList<String>> textWithInfos;
+				synchronized(process10) {
+					textWithInfos = getCodedText(dataIDs, data);
+				}
+				synchronized(process10) {
+					text = textWithInfos.get(0).get(0);
+					strong = getStrong(dataIDs[1], textWithInfos, data);
+					morph = getMorph(dataIDs[1], textWithInfos, data);
+				}
+				synchronized(process10) {
+					text = decodedText(text);
+					source = dataIDs[2];
+				}
+			}
         }
-        else {
-            String[] dataIDs = getDataIDs(ref, indice, sourceName);
-            String data = getData(dataIDs[1]);
-            /* for(String d : dataIDs) {
-                System.out.println(d);
-            } */
-            ArrayList<ArrayList<String>> textWithInfos = getCodedText(dataIDs, data);
-            text = textWithInfos.get(0).get(0);
-            strong = getStrong(dataIDs[1], textWithInfos, data);
-            morph = getMorph(dataIDs[1], textWithInfos, data);
-            text = decodedText(text);
-            source = dataIDs[2];
+        Verse returnValue2;
+        synchronized(process11) {
+        	returnValue2 = new Verse(ref, text, strong, morph, source);
         }
-        
-        return new Verse(ref, text, strong, morph, source);
+        synchronized(process11) {
+        	return returnValue2;
+        }
     }
     
     Verse concatVerse(Reference ref, Verse[] tab, String sourceName) {
