@@ -262,18 +262,35 @@ public class GetPassages {
     
     Verse concatVerse(Reference ref, Verse[] tab, String sourceName) {
         
-        String text = "";
-        ArrayList<Float> strong = new ArrayList<Float>();
-        ArrayList<String> morph = new ArrayList<String>();
-        String source = sourceName;
+        String text;
+        ArrayList<Float> strong;
+        ArrayList<String> morph;
+        String source;
+        Verse returnValue;
         
-        for (int i = 0; i < tab.length; i++) {
-            text += " " + tab[i].text;
-            strong.addAll(tab[i].strongNumbers);
-            morph.addAll(tab[i].morph);
+        final Object process12 = new Object();
+        
+        synchronized(process12) {
+        	text = "";
+        	strong = new ArrayList<Float>();
+        	morph = new ArrayList<String>();
+            source = sourceName;        
         }
         
-        return new Verse(ref, text, strong, morph, source);
+        for (int i = 0; i < tab.length; i++) {
+            synchronized(process12) {
+				text += " " + tab[i].text;
+				strong.addAll(tab[i].strongNumbers);
+				morph.addAll(tab[i].morph);
+			}
+        }
+        
+        synchronized(process12) {
+        	returnValue = new Verse(ref, text, strong, morph, source);
+        }
+        synchronized(process12) {
+        	return returnValue;
+        }
     }
     
     ArrayList<ArrayList<String>> getCodedText(String[] ids, String verse) {
