@@ -296,50 +296,128 @@ public class GetPassages {
     ArrayList<ArrayList<String>> getCodedText(String[] ids, String verse) {
         
         // 0 for text, 1 for strongs, 2 for morphs.
-        ArrayList<ArrayList<String>> data = new ArrayList<ArrayList<String>>();
-        data.add(new ArrayList<String>()); // text
-        data.add(new ArrayList<String>()); // strongs
-        data.add(new ArrayList<String>()); // morphs
-        data.add(new ArrayList<String>()); // position of strong or morph variant.
-        
-        Pattern pattern = Pattern.compile(regexForVerse(ids));
-        Matcher matcher = pattern.matcher(verse);
-        while (matcher.find()) {
-            // text
-            data.get(0).add(matcher.group(1).replaceAll(regexForVariant(), "$1"));
-            
-            Pattern pattern2 = Pattern.compile(regexForVariant());
-            Matcher matcher2 = pattern2.matcher(matcher.group(1));
-            while (matcher2.find()) {
-                data.get(1).add(matcher2.group(2)); // strongs
-                // System.out.println("Strong: " + data.get(1).get(data.get(1).size()-1));
-                data.get(2).add(matcher2.group(3)); // morphs
-            }
-            
-            String regexPart1 = "(<td>)*(" + regexForVariantGen();
-            // )*\X*?((<\/span>)*<\/td>|<\/span>)
-            String regexPart2 = ")*\\X*?((<\\/span>)*<\\/td>|<\\/span>)";
-            String finalRegex =  regexPart1 + regexPart2;
-            
-            Pattern pattern3 = Pattern.compile(finalRegex);
-            Matcher matcher3 = pattern3.matcher(matcher.group(1));
-            
-            for (int position = 0; matcher3.find(); position++) {
-                
-                Pattern pattern4 = Pattern.compile(regexForVariant());
-                Matcher matcher4 = pattern4.matcher(matcher3.group(0));
-                // System.out.println(regexForVariant());
-                // System.out.println(matcher3.group(0) + "\n");
-                while (matcher4.find()) {
-                    //System.out.println("entered: " + matcher3.group(0));
-                    //System.out.println("text verse: " + matcher.group(1).replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", " "));
-                    data.get(3).add(Integer.toString(position)); // position
-                    // System.out.println("position: " + position);
-                    // System.out.println("Strong: " + data.get(1).get(data.get(3).indexOf(data.get(3).get(data.get(3).size()-1))));
-                }
-            }
+        ArrayList<ArrayList<String>> data;
+        final Object process21 = new Object();
+        synchronized(process21) {
+			final Object process13 = new Object();
+			synchronized(process13) {
+				data = new ArrayList<ArrayList<String>>();
+			}
+			synchronized(process13) {
+				data.add(new ArrayList<String>()); // text
+			}
+			synchronized(process13) {
+				data.add(new ArrayList<String>()); // strongs
+			}
+			synchronized(process13) {
+				data.add(new ArrayList<String>()); // morphs
+			}
+			synchronized(process13) {
+				data.add(new ArrayList<String>()); // position of strong or morph variant.
+			}
+			final Object process14 = new Object();
+			Pattern pattern; Matcher matcher;
+			synchronized(process14) {
+				pattern = Pattern.compile(regexForVerse(ids));
+			}
+			synchronized(process14) {
+				matcher = pattern.matcher(verse);
+			}
+			synchronized(process14) {
+				final Object process15 = new Object();
+				while (matcher.find()) {
+					synchronized(process15) {
+						// text
+						synchronized(process13) {
+							final Object process16 = new Object();
+							String stringReplace, toReplace, toAdd;
+							
+							synchronized(process16) {
+								toReplace = matcher.group(1);
+								stringReplace = regexForVariant();
+							}
+							synchronized(process16) {
+								toAdd = toReplace.replaceAll(stringReplace, "$1");
+							}
+							synchronized(process16) {
+								data.get(0).add(toAdd);
+							}
+						}
+						
+						Pattern pattern2;
+						Matcher matcher2;
+						synchronized(process13) {
+							pattern2 = Pattern.compile(regexForVariant());
+						}
+						synchronized(process13) {
+							matcher2 = pattern2.matcher(matcher.group(1));
+						}
+						synchronized(process13) {
+							final Object process17 = new Object();
+							while (matcher2.find()) {
+								synchronized(process17) {
+									data.get(1).add(matcher2.group(2)); // strongs
+									// System.out.println("Strong: " + data.get(1).get(data.get(1).size()-1));
+									data.get(2).add(matcher2.group(3)); // morphs
+								}
+							}
+						}
+						
+						String regexPart1, regexPart2, finalRegex;
+						synchronized(process13) {
+							regexPart1 = "(<td>)*(" + regexForVariantGen();
+							// )*\X*?((<\/span>)*<\/td>|<\/span>)
+							regexPart2 = ")*\\X*?((<\\/span>)*<\\/td>|<\\/span>)";
+						}
+						synchronized(process13) {
+							finalRegex =  regexPart1 + regexPart2;
+						}
+						
+						Pattern pattern3; Matcher matcher3;
+						synchronized(process13) {
+							pattern3 = Pattern.compile(finalRegex);
+						}
+						synchronized(process13) {
+							matcher3 = pattern3.matcher(matcher.group(1));
+						}
+						
+						// J'en suis ici quant à la synchronisation.
+						synchronized(process13) {
+							final Object process18 = new Object();
+							for (int position = 0; matcher3.find(); position++) {
+								synchronized(process18) {
+									Pattern pattern4; Matcher matcher4;
+									final Object process19 = new Object();
+									synchronized(process19) {
+										pattern4 = Pattern.compile(regexForVariant());
+									}
+									synchronized(process19) {
+										matcher4 = pattern4.matcher(matcher3.group(0));
+									}
+									// System.out.println(regexForVariant());
+									// System.out.println(matcher3.group(0) + "\n");
+									synchronized(process19) {
+										final Object process20 = new Object();
+										while (matcher4.find()) {
+											synchronized(process20) {
+												//System.out.println("entered: " + matcher3.group(0));
+												//System.out.println("text verse: " + matcher.group(1).replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", " "));
+												data.get(3).add(Integer.toString(position)); // position
+												// System.out.println("position: " + position);
+												// System.out.println("Strong: " + data.get(1).get(data.get(3).indexOf(data.get(3).get(data.get(3).size()-1))));
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		synchronized(process21) {
+        	return data;
         }
-        return data;
     }
     
     String decodedText(String text) {
