@@ -381,7 +381,6 @@ public class GetPassages {
 							matcher3 = pattern3.matcher(matcher.group(1));
 						}
 						
-						// J'en suis ici quant à la synchronisation.
 						synchronized(process13) {
 							final Object process18 = new Object();
 							for (int position = 0; matcher3.find(); position++) {
@@ -421,43 +420,82 @@ public class GetPassages {
     }
     
     String decodedText(String text) {
-        text = text.replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", " ");
-        return text.replaceAll("", "");
+    	final Object process22 = new Object();
+    	synchronized(process22) {
+        	text = text.replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", " ");
+        }
+        synchronized(process22) {
+        	return text.replaceAll("", "");
+        }
     }
     
     String regexForVerse(String[] ids) {
-        String aboutVerse[] = new String[4];
+    	String aboutVerse[], result;
+    	final Object process23 = new Object();
+    	synchronized(process23) {
+        	aboutVerse = new String[4];
+        }
         // <a\s*?href=index\.htm\?
-        aboutVerse[0] = "<a\\s*?href=index\\.htm\\?";
-        // CTST#52005018>ST
-        aboutVerse[1] = ids[0] + "#" + ids[1] + ">" + ids[2];
-        // <\/a><\/td><td>\X+?<\/td>\X*?
-        aboutVerse[2] = "<\\/a><\\/td><td>\\X+?<\\/td>\\X*?";
-        // <td>(\X+?)<\/td>\s*?(<tr|<\/tbody>)
-        aboutVerse[3] = "<td>(\\X+?)<\\/td>\\s*?(<tr|<\\/tbody>)";
-        return concatStrings(aboutVerse);
+        synchronized(process23) {
+			aboutVerse[0] = "<a\\s*?href=index\\.htm\\?";
+			// CTST#52005018>ST
+			aboutVerse[1] = ids[0] + "#" + ids[1] + ">" + ids[2];
+			// <\/a><\/td><td>\X+?<\/td>\X*?
+			aboutVerse[2] = "<\\/a><\\/td><td>\\X+?<\\/td>\\X*?";
+			// <td>(\X+?)<\/td>\s*?(<tr|<\/tbody>)
+			aboutVerse[3] = "<td>(\\X+?)<\\/td>\\s*?(<tr|<\\/tbody>)";
+		}
+		synchronized(process23) {
+			result = concatStrings(aboutVerse);
+		}
+		synchronized(process23) {
+        	return result;
+        }
     }
     
     String regexForVariant() {
-        return regexForVariantGen() + "<\\/span>";
+    	final Object process24 = new Object();
+    	String tmp, result;
+    	synchronized(process24) {
+    		tmp = regexForVariantGen();
+    	}
+    	synchronized(process24) {
+    		tmp += "<\\/span>";
+    	}
+    	synchronized(process24) {
+    		return tmp;
+    	}
     }
     
     String regexForVariantGen() {
-        String[] aboutVariant = new String[6];
-        // <span\s*?class='r0-49 int'>&nbsp;<\/span>
-        aboutVariant[0] = "<span\\s*?class='r0-49 int'>&nbsp;<\\/span>";
-        // <span\s*?class=hover>(\X+?)<span\s*?class=popup>
-        aboutVariant[1] = "<span\\s*?class=hover>(\\X+?)<span\\s*?class=popup>";
-        // <span\s*?class=koine\s*?title=\X+?>\X+?<\/span>
-        aboutVariant[2] = "<span\\s*?class=koine\\s*?title=\\X+?>\\X+?<\\/span>";
-        // <br><a\s*?href=\X+?\s*?target=_blank>(\X+?)<\/a>
-        aboutVariant[3] = "<br><a\\s*?href=\\X+?\\s*?target=_blank>(\\X+?)<\\/a>";
-        // <br><span\s*?title='\X+?'>(\X+?)<\/span>
-        aboutVariant[4] = "<br><span\\s*?title='\\X+?'>(\\X+?)<\\/span>";
-        // <br>\X+?<\/span><\/span>
-        aboutVariant[5] = "<br>\\X+?<\\/span>";
-        return concatStrings(aboutVariant);
+        String aboutVariant[], result;
+        final Object process25 = new Object();
+        synchronized(process25) {
+    		aboutVariant = new String[6];
+    	}
+    	synchronized(process25) {
+			// <span\s*?class='r0-49 int'>&nbsp;<\/span>
+			aboutVariant[0] = "<span\\s*?class='r0-49 int'>&nbsp;<\\/span>";
+			// <span\s*?class=hover>(\X+?)<span\s*?class=popup>
+			aboutVariant[1] = "<span\\s*?class=hover>(\\X+?)<span\\s*?class=popup>";
+			// <span\s*?class=koine\s*?title=\X+?>\X+?<\/span>
+			aboutVariant[2] = "<span\\s*?class=koine\\s*?title=\\X+?>\\X+?<\\/span>";
+			// <br><a\s*?href=\X+?\s*?target=_blank>(\X+?)<\/a>
+			aboutVariant[3] = "<br><a\\s*?href=\\X+?\\s*?target=_blank>(\\X+?)<\\/a>";
+			// <br><span\s*?title='\X+?'>(\X+?)<\/span>
+			aboutVariant[4] = "<br><span\\s*?title='\\X+?'>(\\X+?)<\\/span>";
+			// <br>\X+?<\/span><\/span>
+			aboutVariant[5] = "<br>\\X+?<\\/span>";
+		}
+		synchronized(process25) {
+			result = concatStrings(aboutVariant);
+		}
+		synchronized(process25) {
+        	return result;
+        }
     }
+    
+    // J'en suis ici quant à la synchronisation (reste 7 méthodes).
     
     String concatStrings(String[] givenStrings) {
         String concatened = "";
