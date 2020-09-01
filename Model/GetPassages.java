@@ -495,33 +495,52 @@ public class GetPassages {
         }
     }
     
-    // J'en suis ici quant à la synchronisation (reste 7 méthodes).
-    
     String concatStrings(String[] givenStrings) {
-        String concatened = "";
-        for (int i = 0; i < givenStrings.length; i++) {
-            concatened += givenStrings[i];
+    	final Object process26 = new Object();
+    	String concatened;
+    	synchronized(process26) {
+        	concatened = "";
         }
-        return concatened;
+        for (int i = 0; i < givenStrings.length; i++) {
+        	synchronized(process26) {
+            	concatened += givenStrings[i];
+            }
+        }
+        synchronized(process26) {
+        	return concatened;
+        }
     }
     
     String getCodedVerse(String id, String data) {
-        
-        // (<a id=59005015><\/a><h2>\X+?<\/h2>\s*?<table>\X+?<\/table>)
-        String[] regex = new String[3];
-        regex[0] = "(<a id=" + id + "><\\/a>";
-        regex[1] = "<h2>\\X+?<\\/h2>\\s*?<table>";
-        regex[2] = "\\X+?<\\/table>)";
-        
-        Pattern pattern = Pattern.compile(concatStrings(regex));
-        Matcher matcher = pattern.matcher(data);
-        
-        while (matcher.find()) {
-            return matcher.group(0);
+        final Object process27 = new Object();
+    	String[] regex;
+    	synchronized(process27) {
+        	// (<a id=59005015><\/a><h2>\X+?<\/h2>\s*?<table>\X+?<\/table>)
+        	regex = new String[3];
         }
-        
-        return null;
+        synchronized(process27) {
+			regex[0] = "(<a id=" + id + "><\\/a>";
+			regex[1] = "<h2>\\X+?<\\/h2>\\s*?<table>";
+			regex[2] = "\\X+?<\\/table>)";
+		}
+        Pattern pattern; Matcher matcher;
+        synchronized(process27) {
+        	pattern = Pattern.compile(concatStrings(regex));
+        }
+        synchronized(process27) {
+        	matcher = pattern.matcher(data);
+        }
+        synchronized(process27) {
+			while (matcher.find()) {
+				return matcher.group(0);
+			}
+		}
+        synchronized(process27) {
+        	return null;
+        }
     }
+    
+    // J'en suis ici quant à la synchronisation (reste 5 méthodes).
     
     ArrayList<Float> getStrong(String id, ArrayList<ArrayList<String>> textWithInfos, String data) {
         // System.out.println("GET STRONG");
