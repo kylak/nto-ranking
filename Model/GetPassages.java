@@ -584,8 +584,8 @@ public class GetPassages {
 					}
 					else {
 						final Object process30 = new Object();
-						int index, i2, toAdd1;
-						float toAdd2; 
+						int index; float toAdd2;
+						String i2, toAdd1;
 						synchronized(process30) {
 							i2 = Integer.toString(i);
 						}
