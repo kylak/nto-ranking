@@ -540,33 +540,72 @@ public class GetPassages {
         }
     }
     
-    // J'en suis ici quant à la synchronisation (reste 5 méthodes).
-    
     ArrayList<Float> getStrong(String id, ArrayList<ArrayList<String>> textWithInfos, String data) {
+    	
         // System.out.println("GET STRONG");
-        ArrayList<Float> strongs = new ArrayList<Float>();
+        ArrayList<Float> strongs;
+        ArrayList<Integer> isToRemove;
+        String regex, codedVerse, text;
+        Pattern pattern; Matcher matcher;
+        final Object process28 = new Object();
         
-        String regex = regexForStrongs();
-        Pattern pattern = Pattern.compile(regex);
-        
-        String codedVerse = getCodedVerse(id, data);
-        Matcher matcher = pattern.matcher(codedVerse);
-        
-        String text = textWithInfos.get(0).get(0);
-        ArrayList<Integer> isToRemove = whatSToRemove(text);
+        synchronized(process28) {
+        	strongs = new ArrayList<Float>();
+			regex = regexForStrongs();
+		}
+		synchronized(process28) {
+        	pattern = Pattern.compile(regex);
+        }
+        synchronized(process28) {
+        	codedVerse = getCodedVerse(id, data);
+        }
+        synchronized(process28) {
+       		matcher = pattern.matcher(codedVerse);
+       	}
+        synchronized(process28) {
+        	text = textWithInfos.get(0).get(0);
+        }
+        synchronized(process28) {
+        	isToRemove = whatSToRemove(text);
+        }
         
         for (int i = 0; matcher.find(); i++) {
-            if (!isToRemove.contains(i)) {
-                if (!textWithInfos.get(3).contains(Integer.toString(i))) {
-                    strongs.add(Float.parseFloat(matcher.group(1)));
-                }
-                else {
-                    int index = textWithInfos.get(3).indexOf(Integer.toString(i));
-                    strongs.add(Float.parseFloat(textWithInfos.get(1).get(index)));
-                    // System.out.println("text: " + textWithInfos.get(0).get(0).replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", " "));
-                    // System.out.println("Strong que l'on prend: " + textWithInfos.get(1).get(index) + " - au lieu de : " + matcher.group(1));
-                }
-            }
+        	synchronized(process28) {
+				if (!isToRemove.contains(i)) {
+					if (!textWithInfos.get(3).contains(Integer.toString(i))) {
+						final Object process29 = new Object();
+						float toAdd;
+						synchronized(process29) {
+							toAdd = Float.parseFloat(matcher.group(1));
+						}
+						synchronized(process29) {
+							strongs.add(toAdd);
+						}
+					}
+					else {
+						final Object process30 = new Object();
+						int index, i2, toAdd1;
+						float toAdd2; 
+						synchronized(process30) {
+							i2 = Integer.toString(i);
+						}
+						synchronized(process30) {
+							index = textWithInfos.get(3).indexOf(i2);
+						}
+						synchronized(process30) {
+							toAdd1 = textWithInfos.get(1).get(index);
+						}
+						synchronized(process30) {
+							toAdd2 = Float.parseFloat(toAdd1);
+						}
+						synchronized(process30) {
+							strongs.add(toAdd2);
+						}
+						// System.out.println("text: " + textWithInfos.get(0).get(0).replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", " "));
+						// System.out.println("Strong que l'on prend: " + textWithInfos.get(1).get(index) + " - au lieu de : " + matcher.group(1));
+					}
+				}
+			}
         }
         /*
         String str = "";
@@ -575,8 +614,12 @@ public class GetPassages {
         }
         System.out.println("text: " + text + "\nstrong: " + str + "\n\n"); */
         // System.out.println("givenVerse.strongNumbers.size(): " + strongs.size());
-        return strongs;
+        synchronized(process28) {
+        	return strongs;
+        }
     }
+    
+    // J'en suis ici quant à la synchronisation (reste 4 méthodes).
     
     String regexForStrongs() {
         String[] aboutStrongs = new String[2];
