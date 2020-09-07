@@ -619,41 +619,95 @@ public class GetPassages {
         }
     }
     
-    // J'en suis ici quant à la synchronisation (reste 4 méthodes).
-    
     String regexForStrongs() {
-        String[] aboutStrongs = new String[2];
+        String aboutStrongs[], result;
+        final Object process31 = new Object();
         // <td \X+?https:\/\/biblehub\.com\/greek
         // <td \X+?<br>\X*?(\d*\.*\d*)?(<\/a>){0,1}<br>
-        aboutStrongs[0] = "<td \\X+?<br>\\X*?(\\d*\\.*\\d*)?";
-        aboutStrongs[1] = "(<\\/a>){0,1}<br>";
-        return concatStrings(aboutStrongs);
+        synchronized(process31) {
+        	aboutStrongs = new String[2];
+        }
+        synchronized(process31) {
+        	aboutStrongs[0] = "<td \\X+?<br>\\X*?(\\d*\\.*\\d*)?";
+        	aboutStrongs[1] = "(<\\/a>){0,1}<br>";
+        }
+        synchronized(process31) {
+        	result = concatStrings(aboutStrongs);
+        }
+        synchronized(process31) {
+        	return result;
+        }
     }
+    
+    // J'en suis ici quant à la synchronisation (reste 3 méthodes).
     
     ArrayList<String> getMorph(String id, ArrayList<ArrayList<String>> textWithInfos, String data) {
         
         ArrayList<String> morphs = new ArrayList<String>();
+        String regex, codedVerse, text;
+        Pattern pattern; Matcher matcher;
+        ArrayList<Integer> isToRemove;
         
-        String regex = regexForMorphs();
-        Pattern pattern = Pattern.compile(regex);
+        final Object process32 = new Object();
+        final Object process33 = new Object();
         
-        String codedVerse = getCodedVerse(id, data);
-        Matcher matcher = pattern.matcher(codedVerse);
-        
-        String text = textWithInfos.get(0).get(0);
-        ArrayList<Integer> isToRemove = whatSToRemove(text);
-        
-        for (int i = 0; matcher.find(); i++) {
-            if (!isToRemove.contains(i)) {
-                if (!textWithInfos.get(3).contains(Integer.toString(i))) {
-                    morphs.add(matcher.group(3));
-                }
-                else {
-                    int index = textWithInfos.get(3).indexOf(Integer.toString(i));
-                    morphs.add(textWithInfos.get(2).get(index));
-                }
-            }
+        synchronized(process32) {
+        	regex = regexForMorphs();
         }
+        synchronized(process32) {
+       		pattern = Pattern.compile(regex);
+       	}
+        synchronized(process32) {
+        	codedVerse = getCodedVerse(id, data);
+        }
+        synchronized(process32) {
+        	matcher = pattern.matcher(codedVerse);
+        }
+        
+        synchronized(process33) {
+        	text = textWithInfos.get(0).get(0);
+        }
+        synchronized(process33) {
+        	isToRemove = whatSToRemove(text);
+        }
+        
+        synchronized(process32) {
+        	final Object process34 = new Object();
+        	ArrayList<String> container; int index;
+        	String iStr, newMorph; boolean condition;
+			for (int i = 0; matcher.find(); i++) {
+				synchronized(process33) {
+					if (!isToRemove.contains(i)) {
+						synchronized(process34) {
+							iStr = Integer.toString(i);
+							container = textWithInfos.get(3);
+						}
+						synchronized(process34) {
+							condition = container.contains(iStr);
+							newMorph = matcher.group(3);
+							index = container.indexOf(iStr);
+						}
+						synchronized(process34) {
+							if (!condition) {
+								morphs.add(newMorph);
+							}
+							else {
+								final Object process35 = new Object();
+								synchronized(process34) {
+									container = textWithInfos.get(2);
+								}
+								synchronized(process34) {
+									newMorph = container.get(index);
+								}
+								synchronized(process34) {
+									morphs.add(newMorph);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
         
         /* String tmpe = decodedText(text);
         String[] tmp = tmpe.split(" ");
@@ -665,7 +719,10 @@ public class GetPassages {
             str += Float.toString(s) + " ";
         }
         System.out.println("text: " + text + "\nstrong: " + str + "\n\n"); */
-        return morphs;
+        synchronized(process32) {
+        synchronized(process33) {
+        	return morphs;
+        }}
     }
     
     String regexForMorphs() {
