@@ -13,6 +13,11 @@ import java.text.DecimalFormat;
 
 // To do: to implement BHP+ utilisation.
 
+/* You can see several comments on the previous version 
+of this file, these files are available on Github.
+In the master's commits, the ones before the 7th of September.
+*/
+
 public class GetPassages {
     
     String locA = "/Users/gustavberloty/Documents/GitHub/";
@@ -27,7 +32,6 @@ public class GetPassages {
     	synchronized(process1) {
 			getRef(urlBase + filename);
 		}
-		// System.out.println("entered");
 		synchronized(process1) {
 			final Object process2 = new Object();
 			for (Reference ref : passages.keySet()) {
@@ -59,9 +63,6 @@ public class GetPassages {
 						// Comma used as separator.
 						String finding = line.split(cvsSplitBy)[0];
 						
-						// Get the verses division specified in the list.
-						// It should be given as "verses_division_:_X,"
-						// where X is the verse division (CNTR, NA28, …).
 						if (i == 0) {
 							verseDivision = finding.substring(18);
 							final Object process3 = new Object();
@@ -159,9 +160,6 @@ public class GetPassages {
 				return new String(Files.readAllBytes(Paths.get(dataPath)));
 			}
 			catch (IOException givenException) {
-				/* String error = "An error occured when we tried to read the file (";
-				error += dataPath + ").";
-				System.out.println(error); */
 				return null;
 			}
 		}
@@ -233,9 +231,6 @@ public class GetPassages {
 				synchronized(process10) {
 					data = getData(dataIDs[1]);
 				}
-				/* for(String d : dataIDs) {
-					System.out.println(d);
-				} */
 				ArrayList<ArrayList<String>> textWithInfos;
 				synchronized(process10) {
 					textWithInfos = getCodedText(dataIDs, data);
@@ -393,17 +388,11 @@ public class GetPassages {
 									synchronized(process19) {
 										matcher4 = pattern4.matcher(matcher3.group(0));
 									}
-									// System.out.println(regexForVariant());
-									// System.out.println(matcher3.group(0) + "\n");
 									synchronized(process19) {
 										final Object process20 = new Object();
 										while (matcher4.find()) {
 											synchronized(process20) {
-												//System.out.println("entered: " + matcher3.group(0));
-												//System.out.println("text verse: " + matcher.group(1).replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", " "));
-												data.get(3).add(Integer.toString(position)); // position
-												// System.out.println("position: " + position);
-												// System.out.println("Strong: " + data.get(1).get(data.get(3).indexOf(data.get(3).get(data.get(3).size()-1))));
+												data.get(3).add(Integer.toString(position));
 											}
 										}
 									}
@@ -515,7 +504,6 @@ public class GetPassages {
         final Object process27 = new Object();
     	String[] regex;
     	synchronized(process27) {
-        	// (<a id=59005015><\/a><h2>\X+?<\/h2>\s*?<table>\X+?<\/table>)
         	regex = new String[3];
         }
         synchronized(process27) {
@@ -542,7 +530,6 @@ public class GetPassages {
     
     ArrayList<Float> getStrong(String id, ArrayList<ArrayList<String>> textWithInfos, String data) {
     	
-        // System.out.println("GET STRONG");
         ArrayList<Float> strongs;
         ArrayList<Integer> isToRemove;
         String regex, codedVerse, text;
@@ -601,19 +588,11 @@ public class GetPassages {
 						synchronized(process30) {
 							strongs.add(toAdd2);
 						}
-						// System.out.println("text: " + textWithInfos.get(0).get(0).replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", " "));
-						// System.out.println("Strong que l'on prend: " + textWithInfos.get(1).get(index) + " - au lieu de : " + matcher.group(1));
 					}
 				}
 			}
         }
-        /*
-        String str = "";
-        for (Float s : strongs) {
-            str += Float.toString(s) + " ";
-        }
-        System.out.println("text: " + text + "\nstrong: " + str + "\n\n"); */
-        // System.out.println("givenVerse.strongNumbers.size(): " + strongs.size());
+        
         synchronized(process28) {
         	return strongs;
         }
@@ -622,8 +601,7 @@ public class GetPassages {
     String regexForStrongs() {
         String aboutStrongs[], result;
         final Object process31 = new Object();
-        // <td \X+?https:\/\/biblehub\.com\/greek
-        // <td \X+?<br>\X*?(\d*\.*\d*)?(<\/a>){0,1}<br>
+
         synchronized(process31) {
         	aboutStrongs = new String[2];
         }
@@ -638,8 +616,6 @@ public class GetPassages {
         	return result;
         }
     }
-    
-    // J'en suis ici quant à la synchronisation (reste 3 méthodes).
     
     ArrayList<String> getMorph(String id, ArrayList<ArrayList<String>> textWithInfos, String data) {
         
@@ -709,16 +685,6 @@ public class GetPassages {
 			}
 		}
         
-        /* String tmpe = decodedText(text);
-        String[] tmp = tmpe.split(" ");
-        if (tmp.length != morphs.size()) {
-            System.out.println("text: " + text);
-        } */
-        /*String str = "";
-        for (Float s : strongs) {
-            str += Float.toString(s) + " ";
-        }
-        System.out.println("text: " + text + "\nstrong: " + str + "\n\n"); */
         synchronized(process32) {
         synchronized(process33) {
         	return morphs;
@@ -727,11 +693,28 @@ public class GetPassages {
     
     String regexForMorphs() {
         // <span\X+?>(\w*-*\w*-*\w*-*\w*)<\/span>
-        String[] regex = new String[2];
-        regex[0] = "<span\\X+?>(\\w*-*\\w*-*";
-        regex[1] = "\\w*-*\\w*)<\\/span>";
-        return (regexForStrongs() + concatStrings(regex));
+        String regex[], part1, part2, part3;
+        final Object process35 = new Object();
+        synchronized(process35) {
+        	regex = new String[2];
+        }
+        synchronized(process35) {
+			regex[0] = "<span\\X+?>(\\w*-*\\w*-*";
+			regex[1] = "\\w*-*\\w*)<\\/span>";
+		}
+		synchronized(process35) {
+			part1 = regexForStrongs();
+			part2 = concatStrings(regex);
+		}
+		synchronized(process35) {
+			part3 = part1 + part2;
+		}
+		synchronized(process35) {
+        	return part3;
+        }
     }
+    
+   	// J'en suis ici quant à la synchronisation (reste 1 méthode).
     
     ArrayList<Integer> whatSToRemove(String text) {
         ArrayList<Integer> element = new ArrayList<Integer>();
@@ -770,50 +753,5 @@ public class GetPassages {
         }
         return element;
     }
-    
-/*
-    Verse getVerse(Reference ref, String source) { // Concernant les sources, remplacer le String
-        
-        // Quel fichier ?
-        
-        // <a\s+?id=40005001><\/a>\s*?<h2>\X+?<\/h2>\s*?<table>\s*?<tr\s+?class=rule>\X*?<td>(\X{1,2})<\/td>\s*?<\/tr>
-        String numberOfWord = "<a\\s+?id=" + verseNumber + "><\\/a>\\s*?<h2>\\X+?<\\/h2>\\s*?<table>\\s*?<tr\\s+?class=rule>\\X*?<td>(\\X{1,2})<\\/td>\\s*?<\\/tr>";
-        int numberOfWord; // matcher.group(x);
-        for(int i = 0; i < ; i++) {
-            text += "un_mot";
-        }
-        
-        // 1. avoir le numéro du verset
-        // <a\s*?href=index\.htm\?GA20001#40005001>GA 01<\/a><\/td><td>\X+?<\/td>\X*?<td>(\X+?)<\/td>\s*?(<tr|<\/tbody>)
-        String regex = "<a\\s*?href=index\\.htm\\?" + sourceNumber + "#" + verseNumber + ">" + sourceName + "<\\/a><\\/td><td>\\X+?<\\/td>\\X*?<td>(\\X+?)<\\/td>\\s*?<tr(<tr|<\\/tbody>)"
-        // remplacer dans la chaîne retournée chaque </td><td> par un espace.
-        
-        // On gère les variations (variantes, corrections, suppressions, etc…)
-        // On récupère un tableau de <td> si dans le tableau on a un
-        // Pour gérer les simples variantes, en un <td> : <span class=hover>(\X+?)<
-        
-        final ArrayList<Integer> strongNumbers;  // The strong number for each verse's word.
-        final ArrayList<String> morph;           // The morphology code for each verse's word.
-        //
-        return null;
-        // return new Verse(ref, text, strongNumbers, morph, source);
-     }
-
-    /*
-     
-     Pour utiliser les manuscrits :
-     
-     // Pour gérer les corrections : <span class=corr>(\X+?)<
-     // Pour gérer les suppressions : <span class=edit>(\X+?)<
-     // Quand une variation est mélangé avec une correction ou suppression, cette variation est enfant de la correction ou suppresion.
-     // Nous n'avons pas à nous occuper des ajouts ou des suppressions.
-     // Pour prendre les "metadatas" (les lettres bleues claires) (à faire après avoir supprimer ce que l'on ne veut pas prendre) : String strippedText = htmlText.replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", " ");
-     // Pour ne pas prendre les "metadatas" :
-     // Pour prendre les lettres en noires (à faire après avoir supprimer ce que l'on ne veut pas prendre) : String strippedText = htmlText.replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", " ");
-     // Pour ne pas prendre les lettres en noires :
-     // <td><span class=dam>υ</span>μεισ</td>
-     // gérer les nominasacras et les *.
-     
-     */
 
 }
