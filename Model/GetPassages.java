@@ -714,44 +714,105 @@ public class GetPassages {
         }
     }
     
-   	// J'en suis ici quant à la synchronisation (reste 1 méthode).
-    
     ArrayList<Integer> whatSToRemove(String text) {
-        ArrayList<Integer> element = new ArrayList<Integer>();
-        
-        // (^\X*?)*(<\/td><td>)+(\W*$)?
-        String regexA = "(^\\X*?)*(<\\/td><td>";
-        String regexB = ")+(\\W*$)?";
-        String regexC = regexA + regexB;
-        
-        Pattern pattern = Pattern.compile(regexC);
-        Matcher matcher = pattern.matcher(text);
-        
-        String theSign = "</td><td></td><td>";
-        
-        for (int i = 1; matcher.find(); i++) {  // C'est bien i = 1 pas i = 0
-            if (matcher.group(1) != null && matcher.group(1).equals("")) {
-                element.add(1);
-                i++; // à vérifier cette instruction.
-            }
-            else if (matcher.group(3) != null && matcher.group(3).equals("")) {
-                String regex2 = "(<\\/td><td>)+?";
-                Pattern pattern2 = Pattern.compile(regex2);
-                Matcher matcher2 = pattern2.matcher(matcher.group(0));
-                while(matcher2.find()){
-                    element.add((i++));
-                }
-            }
-            else if (matcher.group(0) != null && matcher.group(0).contains((theSign))) {
-                String regex2 = "(<td><\\/td>)+?";
-                Pattern pattern2 = Pattern.compile(regex2);
-                Matcher matcher2 = pattern2.matcher(matcher.group(0));
-                while(matcher2.find()){
-                    element.add((i++));
-                }
-            }
+    
+        ArrayList<Integer> element;
+        String regexA, regexB, regexC, theSign;
+        Pattern pattern; Matcher matcher;
+        final Object process36 = new Object();
+                
+        synchronized(process36) {
+			element = new ArrayList<Integer>();
+			regexA = "(^\\X*?)*(<\\/td><td>";
+			regexB = ")+(\\W*$)?";
+			theSign = "</td><td></td><td>";
+		}
+		synchronized(process36) {
+        	regexC = regexA + regexB;
         }
-        return element;
+        synchronized(process36) {
+      		pattern = Pattern.compile(regexC);
+        }
+        synchronized(process36) {
+        	matcher = pattern.matcher(text);
+        }
+        
+        synchronized(process36) {
+        	final Object process37 = new Object();
+			for (int i = 1; matcher.find(); i++) {  // C'est bien i = 1 pas i = 0
+				synchronized(process37) {
+					if (matcher.group(1) != null && matcher.group(1).equals("")) {
+						final Object process38 = new Object();
+						synchronized(process38) {
+							element.add(1);
+						}
+						synchronized(process38) {
+							i++; // à vérifier cette instruction.
+						}
+					}
+					else if (matcher.group(3) != null && matcher.group(3).equals("")) {
+						String regex2;
+						Pattern pattern2; Matcher matcher2;
+						final Object process39 = new Object();
+						synchronized(process39) {
+							regex2 = "(<\\/td><td>)+?";
+							pattern2 = Pattern.compile(regex2);
+						}
+						synchronized(process39) {
+							matcher2 = pattern2.matcher(matcher.group(0));
+						}
+						synchronized(process39) {
+							final Object process40 = new Object();
+							int newValue;
+							while(matcher2.find()){
+								synchronized(process40) {
+									i++;
+								}
+								synchronized(process40) {
+									newValue = i;
+								}
+								synchronized(process40) {
+									element.add(newValue);
+								}
+							}
+						}
+					}
+					else if (matcher.group(0) != null && matcher.group(0).contains((theSign))) {
+						String regex2;
+						Pattern pattern2; Matcher matcher2;
+						final Object process41 = new Object();
+						synchronized(process41) {
+							regex2 = "(<td><\\/td>)+?";
+						}
+						synchronized(process41) {
+							pattern2 = Pattern.compile(regex2);
+						}
+						synchronized(process41) {
+							matcher2 = pattern2.matcher(matcher.group(0));
+						}
+						synchronized(process41) {
+							final Object process42 = new Object();
+							int newValue;
+							while(matcher2.find()){
+								synchronized(process42) {
+									i++;
+								}
+								synchronized(process42) {
+									newValue = i;
+								}
+								synchronized(process42) {
+									element.add(newValue);
+								}
+
+							}
+						}
+					}
+				}
+			}
+		}
+		synchronized(process36) {
+        	return element;
+       	}
     }
 
 }
