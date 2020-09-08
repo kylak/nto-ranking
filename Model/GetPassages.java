@@ -714,6 +714,7 @@ public class GetPassages {
         }
     }
     
+    // Peut-être faudrait-il revoir cette méthode.
     ArrayList<Integer> whatSToRemove(String text) {
     
         ArrayList<Integer> element;
@@ -739,12 +740,15 @@ public class GetPassages {
         
         synchronized(process36) {
         	final Object process37 = new Object();
-			for (int i = 1; matcher.find(); i++) {
+			for (int i = 0; matcher.find(); i++) { // à ce qui p', c'est i = 1
 				synchronized(process37) {
 					if (matcher.group(1) != null && matcher.group(1).equals("")) {
 						final Object process38 = new Object();
 						synchronized(process38) {
 							element.add(1);
+						}
+						synchronized(process38) {
+							i++; // à vérifier cette instruction.
 						}
 					}
 					else if (matcher.group(3) != null && matcher.group(3).equals("")) {
