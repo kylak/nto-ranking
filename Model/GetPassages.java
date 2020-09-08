@@ -739,7 +739,7 @@ public class GetPassages {
         
         synchronized(process36) {
         	final Object process37 = new Object();
-			for (int i = 1; matcher.find(); i++) {  // C'est bien i = 1 pas i = 0
+			for (int i = 0; matcher.find(); i++) {
 				synchronized(process37) {
 					if (matcher.group(1) != null && matcher.group(1).equals("")) {
 						final Object process38 = new Object();
